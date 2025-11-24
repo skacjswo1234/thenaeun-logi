@@ -1,0 +1,1834 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    overflow-x: hidden;
+    background-color: #000000;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 헤더 스타일 */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: transparent;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    box-shadow: none;
+}
+
+.header.scrolled {
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header.nav-hover {
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header.nav-hover .logo img {
+    filter: brightness(0);
+}
+
+.header.nav-hover .nav-list a {
+    color: #333;
+}
+
+.header.nav-hover .menu-toggle span {
+    background: #333;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+}
+
+.logo img {
+    height: 40px;
+    width: auto;
+    transition: all 0.3s ease;
+    filter: brightness(0) invert(1);
+}
+
+.header.scrolled .logo img {
+    filter: brightness(0);
+}
+
+.nav-list {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-list a {
+    text-decoration: none;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.header.scrolled .nav-list a {
+    color: #333;
+}
+
+.nav-list a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #3498db;
+    transition: width 0.3s ease;
+}
+
+.nav-list a:hover {
+    color: #3498db;
+}
+
+.nav-list a:hover::after {
+    width: 100%;
+}
+
+/* 햄버거 메뉴 버튼 */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+}
+
+.menu-toggle span {
+    width: 100%;
+    height: 3px;
+    background: white;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.header.scrolled .menu-toggle span {
+    background: #333;
+}
+
+body.menu-open .menu-toggle span:nth-child(1) {
+    transform: rotate(45deg) translate(8px, 8px);
+}
+
+body.menu-open .menu-toggle span:nth-child(2) {
+    opacity: 0;
+}
+
+body.menu-open .menu-toggle span:nth-child(3) {
+    transform: rotate(-45deg) translate(8px, -8px);
+}
+
+.menu-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #f5f5f5;
+    border: none;
+    color: #666;
+    font-size: 1.8rem;
+    font-weight: 300;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    z-index: 1002;
+}
+
+.menu-close:hover {
+    background: #e0e0e0;
+    color: #333;
+    transform: rotate(90deg);
+}
+
+/* 모바일 메뉴 오버레이 */
+.mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 모바일 사이드 메뉴 */
+.mobile-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 240px;
+    max-width: 85%;
+    height: 100%;
+    background: #ffffff;
+    z-index: 9999;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-menu.active {
+    right: 0;
+}
+
+.mobile-nav-list {
+    list-style: none;
+    padding: 70px 0 30px 0;
+    margin: 0;
+    flex: 1;
+}
+
+.mobile-nav-list li {
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.mobile-nav-list li:last-child {
+    border-bottom: none;
+}
+
+.mobile-nav-list a {
+    display: block;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.mobile-nav-list a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    background: #3498db;
+    transition: width 0.3s ease;
+}
+
+.mobile-nav-list a:hover {
+    background: #f8f9fa;
+    color: #3498db;
+    padding-left: 1.8rem;
+}
+
+.mobile-nav-list a:hover::before {
+    width: 3px;
+}
+
+/* 히어로 섹션 스타일 */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.hero-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    object-fit: cover;
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0.3)
+    );
+    z-index: 2;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    color: white;
+    padding-top: 120px;
+    padding-bottom: 60px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 플로팅 버튼들 */
+/* 오른쪽 상단 문의 버튼 */
+.floating-inquiry-btn {
+    position: fixed;
+    top: 120px;
+    right: 30px;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #ff3333;
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 4px 15px rgba(255, 51, 51, 0.4);
+    transition: all 0.3s ease;
+}
+
+.floating-inquiry-btn:hover {
+    background: #ff0000;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(255, 51, 51, 0.6);
+}
+
+.lightning-icon {
+    font-size: 1.2rem;
+    color: white;
+    filter: brightness(0) invert(1);
+    animation: flash 1.5s infinite;
+    display: inline-block;
+}
+
+@keyframes flash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.inquiry-text {
+    font-size: 1rem;
+}
+
+/* 오른쪽 하단 고정 버튼들 */
+.floating-buttons {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.floating-btn {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: white;
+    font-weight: 700;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.floating-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+}
+
+.floating-btn span {
+    font-size: 1.3rem;
+    display: block;
+}
+
+.top-btn {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.top-btn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.top-btn span {
+    font-size: 0.85rem;
+    font-weight: 800;
+}
+
+.phone-btn {
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+}
+
+.kakao-btn {
+    background: linear-gradient(135deg, #fee500 0%, #fdd835 100%);
+    color: #3c1e1e;
+}
+
+.kakao-btn span {
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.insta-btn {
+    background: linear-gradient(135deg, #e1306c 0%, #c13584 100%);
+}
+
+.insta-icon {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    border: 2px solid white;
+    border-radius: 6px;
+}
+
+.insta-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    border: 2px solid white;
+    border-radius: 50%;
+}
+
+.insta-icon::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+}
+
+.youtube-btn {
+    background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+}
+
+.youtube-btn span {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.hero-main-copy {
+    font-size: 3.8rem;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 2.5rem;
+    text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.8);
+    letter-spacing: -1px;
+    min-height: 2.6em;
+    text-align: center;
+    max-width: 100%;
+    word-break: keep-all;
+    color: white;
+}
+
+.hero-main-copy .typing-text {
+    color: white;
+}
+
+.hero-main-copy .typing-text .highlight-accent {
+    color: #ffd700;
+    text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.9), 0 0 20px rgba(255, 215, 0, 0.6);
+    font-weight: 900;
+}
+
+.hero-main-copy .quote-start {
+    display: inline;
+}
+
+.hero-main-copy .typing-text {
+    display: inline;
+    text-indent: 0;
+}
+
+.hero-main-copy .typing-text br {
+    display: block;
+    content: "";
+    margin-top: 0;
+    line-height: 1.3;
+}
+
+.hero-main-copy .quote-end {
+    display: inline;
+}
+
+.typing-text {
+    display: inline-block;
+}
+
+/* 빨간 텍스트 섹션 스타일 */
+.red-text-section {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.red-section-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0.4)
+    );
+    z-index: 2;
+}
+
+.red-section-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    color: white;
+    padding: 120px 20px 60px;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.red-text-animation {
+    margin-top: 0;
+    min-height: 3em;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 새 섹션 스타일 */
+.new-section {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.new-section-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/h-bg-2.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+}
+
+.new-section-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.5),
+        rgba(0, 0, 0, 0.7)
+    );
+    z-index: 2;
+}
+
+.new-section-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    color: white;
+    padding: 120px 20px 60px;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.new-section-text {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 제목 스타일 */
+.new-section-text .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 1);
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+    letter-spacing: -0.3px;
+    line-height: 1.4;
+    word-break: keep-all;
+}
+
+/* 본문 설명 스타일 */
+.new-section-text .section-description {
+    font-size: 1.8rem;
+    font-weight: 400;
+    line-height: 1.8;
+    margin-bottom: 2.5rem;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.9);
+    letter-spacing: -0.2px;
+    word-break: keep-all;
+}
+
+/* 질문 텍스트 스타일 */
+.new-section-text .section-question {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 1.5rem;
+    text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.8);
+    letter-spacing: -0.2px;
+    word-break: keep-all;
+}
+
+/* 평균 정년 섹션 스타일 */
+.retirement-section {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.retirement-section-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-image: url('images/h-bg-3.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    z-index: 1;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    display: block;
+}
+
+.red-typing-text {
+    font-size: 2rem;
+    font-weight: 800;
+    color: white;
+    text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.9);
+    line-height: 1.8;
+    text-align: center;
+    letter-spacing: -0.3px;
+    word-break: keep-all;
+}
+
+.red-typing-text.final-text {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 1.8;
+}
+
+.red-typing-text .highlight-red,
+.red-typing-text .highlight-orange {
+    font-weight: 900;
+}
+
+.red-typing-text .highlight-red {
+    color: #ff3333;
+    text-shadow: 3px 3px 20px rgba(0, 0, 0, 1), 0 0 30px rgba(255, 51, 51, 0.7);
+}
+
+.red-typing-text .highlight-orange {
+    color: #ff8800;
+    text-shadow: 3px 3px 20px rgba(0, 0, 0, 1), 0 0 30px rgba(255, 136, 0, 0.7);
+}
+
+/* 이미지 섹션 스타일 */
+.image-section {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #ffffff;
+    padding: 60px 20px;
+}
+
+.section-image {
+    width: auto;
+    max-width: 80%;
+    max-height: 70vh;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 서비스 섹션 스타일 */
+.services-section {
+    position: relative;
+    width: 100%;
+    background-color: #ffffff;
+}
+
+/* 유튜브 프로모션 섹션 스타일 */
+.youtube-promo-section {
+    background-color: #000000;
+    padding: 100px 20px;
+    width: 100%;
+}
+
+.youtube-promo-title {
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+    text-align: center;
+    margin-bottom: 4rem;
+    letter-spacing: -0.5px;
+}
+
+.youtube-promo-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.youtube-video-wrapper {
+    position: relative;
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(255, 0, 0, 0.3);
+    transform: perspective(1000px) rotateY(-5deg);
+    transition: transform 0.3s ease;
+}
+
+.youtube-video-wrapper:hover {
+    transform: perspective(1000px) rotateY(0deg) scale(1.02);
+}
+
+.youtube-promo-video {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 20px;
+}
+
+.youtube-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.youtube-play-btn:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.youtube-play-btn.hidden {
+    display: none;
+}
+
+.youtube-video-wrapper.playing .youtube-play-btn {
+    display: none;
+}
+
+.youtube-promo-button-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.youtube-promo-btn {
+    display: inline-block;
+    padding: 1.5rem 3.5rem;
+    background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    box-shadow: 0 6px 25px rgba(255, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    letter-spacing: 1px;
+}
+
+.youtube-promo-btn:hover {
+    background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(255, 0, 0, 0.6);
+}
+
+.youtube-promo-btn:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+/* 문의하기 섹션 스타일 */
+.contact-section {
+    position: relative;
+    width: 100%;
+    padding: 100px 20px;
+    overflow: hidden;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.contact-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+   
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.85),
+        rgba(255, 255, 255, 0.9)
+    );
+    z-index: 2;
+}
+
+.contact-content {
+    position: relative;
+    z-index: 3;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    width: 100%;
+}
+
+.contact-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: white;
+    letter-spacing: -0.5px;
+}
+
+.contact-subtitle {
+    font-size: 1.3rem;
+    margin-bottom: 3rem;
+    color: white;
+    line-height: 1.6;
+}
+
+.contact-form {
+    background: #f8f9fa;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(30, 60, 114, 0.1);
+    border: 1px solid #e0e0e0;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #1e3c72;
+    font-size: 1rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.9rem 1.2rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #333;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.submit-btn:hover {
+    background: linear-gradient(135deg, #2980b9 0%, #1e6fa8 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+/* 푸터 스타일 */
+.footer {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: white;
+    padding: 60px 20px 30px;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section {
+    text-align: left;
+}
+
+.footer-logo img {
+    height: 40px;
+    width: auto;
+    margin-bottom: 1rem;
+    filter: brightness(0) invert(1);
+}
+
+.footer-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 0.5rem;
+}
+
+.footer-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-list li {
+    margin-bottom: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.footer-list a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-list a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.hero-sub-copy {
+    font-size: 1.3rem;
+    font-weight: 400;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+    text-shadow: 1px 1px 8px rgba(0, 0, 0, 0.7);
+    animation: fadeInUp 1s ease 0.2s both;
+    opacity: 0.95;
+}
+
+.hero-strong-message {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.4;
+    color: white;
+    text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.9);
+    letter-spacing: -0.5px;
+    margin-top: 2rem;
+    min-height: 2.8em;
+    text-align: center;
+    max-width: 100%;
+    word-break: keep-all;
+}
+
+.hero-strong-message .typing-text .highlight-accent {
+    color: #ffd700;
+    text-shadow: 2px 2px 15px rgba(0, 0, 0, 0.9), 0 0 20px rgba(255, 215, 0, 0.6);
+    font-weight: 900;
+}
+
+.hero-strong-message .typing-text {
+    display: inline-block;
+    text-indent: 0;
+    text-align: left;
+}
+
+.hero-strong-message .typing-text br {
+    display: block;
+    content: "";
+    margin-top: 0;
+}
+
+.hero-strong-message .typing-text .highlight-red {
+    color: #ff3333;
+    text-shadow: 3px 3px 20px rgba(0, 0, 0, 1), 0 0 30px rgba(255, 51, 51, 0.7);
+    font-weight: 900;
+}
+
+.cursor {
+    display: inline-block;
+    width: 3px;
+    height: 1em;
+    background: white;
+    margin-left: 2px;
+    animation: blink 1s infinite;
+    vertical-align: baseline;
+}
+
+.cursor.hidden {
+    opacity: 0;
+}
+
+.hero-strong-message .cursor {
+    background: white;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0;
+    }
+}
+
+
+/* 애니메이션 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .nav {
+        display: none;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    .hero-bg {
+        object-fit: cover;
+    }
+    
+    .hero {
+        overflow: hidden;
+    }
+
+    .logo img {
+        height: 35px;
+    }
+
+    .hero-content {
+        padding-top: 70px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .hero-main-copy {
+        font-size: 3.5rem;
+        margin-bottom: 2rem;
+        line-height: 1.4;
+        letter-spacing: -0.5px;
+        max-width: 100%;
+        word-break: keep-all;
+        min-height: 2.8em;
+        text-indent: 0;
+    }
+
+    .hero-sub-copy {
+        font-size: 1.15rem;
+        margin-bottom: 2.5rem;
+        line-height: 1.7;
+    }
+
+    .hero-strong-message {
+        font-size: 1.5rem;
+        line-height: 1.5;
+        margin-top: 1.5rem;
+        max-width: 100%;
+        word-break: keep-all;
+        min-height: 3em;
+        text-indent: 0;
+    }
+
+    .hero-strong-message .typing-text {
+        text-indent: 0;
+    }
+
+    .red-typing-text {
+        font-size: 1.4rem;
+        line-height: 1.7;
+        letter-spacing: -0.2px;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 1rem 1.2rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .red-typing-text.final-text {
+        font-size: 1.5rem;
+        line-height: 1.7;
+    }
+
+    .red-section-content {
+        padding: 100px 20px 60px;
+    }
+
+    .new-section-content {
+        padding: 100px 20px 60px;
+    }
+
+    .retirement-section {
+        min-height: 100vh;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .retirement-section-bg {
+        background-image: url('images/h-bg-3-m.png');
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        height: 100vh;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+    }
+
+    .new-section-text .section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 1.2rem;
+        line-height: 1.4;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 1rem 1.2rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .new-section-text .section-description {
+        font-size: 1.3rem;
+        font-weight: 400;
+        margin-bottom: 1.8rem;
+        line-height: 1.7;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 1.2rem 1.2rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .new-section-text .section-question {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-top: 1.2rem;
+        line-height: 1.5;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 1rem 1.2rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .image-section {
+        padding: 0;
+        margin: 0;
+        background-color: #000000;
+    }
+
+    .section-image {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        max-width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .contact-section {
+        padding: 60px 20px;
+    }
+
+    .contact-title {
+        font-size: 2rem;
+    }
+
+    .contact-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .contact-form {
+        padding: 1.5rem;
+    }
+
+    .footer {
+        padding: 40px 20px 20px;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .footer-section {
+        text-align: center;
+    }
+
+    /* 유튜브 프로모션 섹션 모바일 스타일 */
+    .youtube-promo-section {
+        padding: 60px 20px;
+    }
+
+    .youtube-promo-title {
+        font-size: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .youtube-promo-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .youtube-video-wrapper {
+        transform: none;
+    }
+
+    .youtube-video-wrapper:hover {
+        transform: scale(1.02);
+    }
+
+    .youtube-promo-button-wrapper {
+        padding: 1rem;
+    }
+
+    .youtube-promo-btn {
+        padding: 1.2rem 2.5rem;
+        font-size: 1.2rem;
+    }
+
+    /* 플로팅 버튼 모바일 스타일 */
+    .floating-inquiry-btn {
+        top: 100px;
+        right: 15px;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+
+    .lightning-icon {
+        font-size: 1rem;
+        filter: brightness(0) invert(1);
+    }
+
+    .inquiry-text {
+        font-size: 0.9rem;
+    }
+
+    .floating-buttons {
+        bottom: 20px;
+        right: 15px;
+        gap: 10px;
+    }
+
+    .floating-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 0.85rem;
+    }
+
+    .floating-btn span {
+        font-size: 1rem;
+    }
+
+    .top-btn span {
+        font-size: 0.7rem;
+    }
+
+    .kakao-btn span {
+        font-size: 0.85rem;
+    }
+
+    .insta-icon {
+        width: 18px;
+        height: 18px;
+    }
+
+    .insta-icon::before {
+        width: 9px;
+        height: 9px;
+    }
+
+    .insta-icon::after {
+        width: 3px;
+        height: 3px;
+        top: 3px;
+        right: 3px;
+    }
+
+    .youtube-btn span {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content {
+        gap: 0;
+    }
+
+    .logo img {
+        height: 30px;
+    }
+
+    .hero-bg {
+        object-fit: cover;
+    }
+    
+    .hero {
+        overflow: hidden;
+    }
+
+    .mobile-menu {
+        width: 220px;
+        max-width: 80%;
+    }
+
+    .mobile-nav-list {
+        padding: 60px 0 20px 0;
+    }
+
+    .mobile-nav-list a {
+        padding: 0.9rem 1.3rem;
+        font-size: 0.95rem;
+    }
+
+    .menu-close {
+        top: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        font-size: 1.6rem;
+    }
+
+    .hero-content {
+        padding-top: 50px;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .hero-main-copy {
+        font-size: 2.3rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.3;
+        letter-spacing: -0.5px;
+        max-width: 100%;
+        word-break: keep-all;
+        min-height: 2.6em;
+        text-indent: 0;
+    }
+
+    .hero-sub-copy {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .hero-strong-message {
+        font-size: 1.05rem;
+        line-height: 1.4;
+        margin-top: 1rem;
+        max-width: 100%;
+        word-break: keep-all;
+        min-height: 2.8em;
+        text-indent: 0;
+    }
+
+    .hero-strong-message .typing-text {
+        text-indent: 0;
+    }
+
+    .red-typing-text {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        letter-spacing: -0.1px;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 0.9rem 1rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .red-typing-text.final-text {
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .red-section-content {
+        padding: 80px 15px 60px;
+    }
+
+    .new-section-content {
+        padding: 80px 15px 60px;
+    }
+
+    .retirement-section {
+        min-height: 100vh;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .retirement-section-bg {
+        background-image: url('images/h-bg-3-m.png');
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        height: 100vh;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+    }
+
+    .new-section-text .section-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 0.9rem 1rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .new-section-text .section-description {
+        font-size: 1.1rem;
+        font-weight: 400;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 1rem 1rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .new-section-text .section-question {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-top: 1rem;
+        line-height: 1.4;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 0.9rem 1rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .image-section {
+        padding: 0;
+        margin: 0;
+        background-color: #000000;
+    }
+
+    .section-image {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        max-width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .youtube-promo-section {
+        padding: 50px 15px;
+    }
+
+    .youtube-promo-title {
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+    }
+
+    .youtube-promo-content {
+        gap: 2rem;
+    }
+
+    .youtube-promo-btn {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+
+    .contact-section {
+        padding: 40px 10px;
+    }
+
+    .contact-title {
+        font-size: 1.6rem;
+    }
+
+    .contact-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .contact-form {
+        padding: 1rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.9rem;
+    }
+
+    .submit-btn {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .hero-bg {
+        object-fit: cover;
+    }
+    
+    .hero {
+        overflow: hidden;
+    }
+
+    .hero-main-copy {
+        font-size: 1.9rem;
+        line-height: 1.25;
+        letter-spacing: -0.6px;
+        min-height: 2.5em;
+        text-indent: 0;
+    }
+
+    .hero-strong-message {
+        font-size: 0.95rem;
+        line-height: 1.35;
+        min-height: 2.7em;
+        text-indent: 0;
+    }
+
+    .hero-content {
+        padding-top: 40px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .red-typing-text {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        letter-spacing: -0.1px;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 0.8rem 0.9rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .red-typing-text.final-text {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .red-section-content {
+        padding: 60px 10px 40px;
+    }
+
+    .new-section-content {
+        padding: 60px 10px 40px;
+    }
+
+    .retirement-section {
+        min-height: 100vh;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    .retirement-section-bg {
+        background-image: url('images/h-bg-3-m.png');
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        height: 100vh;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+    }
+
+    .new-section-text .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 0.9rem;
+        line-height: 1.3;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 0.8rem 0.9rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .new-section-text .section-description {
+        font-size: 1rem;
+        font-weight: 400;
+        margin-bottom: 1.2rem;
+        line-height: 1.5;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 0.9rem 0.9rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .new-section-text .section-question {
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-top: 0.9rem;
+        line-height: 1.3;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 0.8rem 0.9rem;
+        border-radius: 8px;
+        display: inline-block;
+        max-width: 100%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .image-section {
+        padding: 0;
+        margin: 0;
+        background-color: #000000;
+    }
+
+    .section-image {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        max-width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .youtube-promo-section {
+        padding: 40px 10px;
+    }
+
+    .youtube-promo-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .youtube-promo-content {
+        gap: 1.5rem;
+    }
+
+    .youtube-promo-btn {
+        padding: 0.9rem 1.8rem;
+        font-size: 0.95rem;
+    }
+
+    .contact-section {
+        padding: 40px 10px;
+    }
+
+    .contact-title {
+        font-size: 1.6rem;
+    }
+
+    .contact-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .contact-form {
+        padding: 1rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.9rem;
+    }
+
+    .submit-btn {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.95rem;
+    }
+}
+

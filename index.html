@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>더나은물류</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 히어로 섹션 -->
+    <section class="hero" id="home">
+        <video class="hero-bg" id="hero-bg-1" autoplay muted loop playsinline>
+            <source id="hero-bg-1-source" src="images/h-1.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        
+        <!-- 헤더 -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <img src="images/logo_white.png" alt="더나은물류">
+                    </div>
+                    <button class="menu-toggle" aria-label="메뉴 열기">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <nav class="nav">
+                        <ul class="nav-list">
+                            <li><a href="#home">홈</a></li>
+                            <li><a href="#about">회사소개</a></li>
+                            <li><a href="#services">서비스</a></li>
+                            <li><a href="#contact">문의하기</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- 모바일 사이드 메뉴 -->
+        <div class="mobile-menu-overlay"></div>
+        <nav class="mobile-menu">
+            <button class="menu-close" aria-label="메뉴 닫기">×</button>
+            <ul class="mobile-nav-list">
+                <li><a href="#home">홈</a></li>
+                <li><a href="#about">회사소개</a></li>
+                <li><a href="#services">서비스</a></li>
+                <li><a href="#contact">문의하기</a></li>
+            </ul>
+        </nav>
+
+    </section>
+
+    <!-- 플로팅 버튼들 -->
+    <!-- 오른쪽 상단 문의 버튼 -->
+    <a href="#contact" class="floating-inquiry-btn">
+        <span class="lightning-icon">⚡</span>
+        <span class="inquiry-text">문의</span>
+    </a>
+
+    <!-- 오른쪽 하단 고정 버튼들 -->
+    <div class="floating-buttons">
+        <a href="#home" class="floating-btn top-btn" title="맨 위로">
+            <span>TOP</span>
+        </a>
+        <a href="tel:1800-9527" class="floating-btn phone-btn" title="전화하기">
+            <span>📞</span>
+        </a>
+        <a href="#" class="floating-btn kakao-btn" title="카카오톡" onclick="alert('카카오톡 링크를 추가해주세요'); return false;">
+            <span>K</span>
+        </a>
+        <a href="#" class="floating-btn insta-btn" title="인스타그램" onclick="alert('인스타그램 링크를 추가해주세요'); return false;">
+            <span class="insta-icon"></span>
+        </a>
+        <a href="https://www.youtube.com/@betterlogis/videos" target="_blank" class="floating-btn youtube-btn" title="유튜브">
+            <span>▶</span>
+        </a>
+    </div>
+
+    <!-- 서비스 섹션 -->
+    <section class="services-section" id="services">
+        <!-- 이미지 섹션들 -->
+        <section class="image-section">
+            <img src="images/section/h-1.png" data-mobile="images/section/h-1-m.png" alt="Section 1" class="section-image">
+        </section>
+    <section class="image-section">
+        <img src="images/section/h-2.png" data-mobile="images/section/h-2-m.png" alt="Section 2" class="section-image">
+    </section>
+    <section class="image-section">
+        <img src="images/section/h-3.png" data-mobile="images/section/h-3-m.png" alt="Section 3" class="section-image">
+    </section>
+    <section class="image-section">
+        <img src="images/section/h-4.png" data-mobile="images/section/h-4-m.png" alt="Section 4" class="section-image">
+    </section>
+    <section class="image-section">
+        <img src="images/section/h-5.png" data-mobile="images/section/h-5-m.png" alt="Section 5" class="section-image">
+    </section>
+    <section class="image-section">
+        <img src="images/section/h-6.png" data-mobile="images/section/h-6-m.png" alt="Section 6" class="section-image">
+    </section>
+    <section class="image-section">
+        <img src="images/section/h-7.png" data-mobile="images/section/h-7-m.png" alt="Section 7" class="section-image">
+    </section>
+    <section class="image-section">
+        <img src="images/section/h-8.png" data-mobile="images/section/h-8-m.png" alt="Section 8" class="section-image">
+    </section>
+    <section class="image-section">
+        <img src="images/section/h-9.png" data-mobile="images/section/h-9-m.png" alt="Section 9" class="section-image">
+    </section>
+    <section class="image-section">
+        <img src="images/section/h-10.png" data-mobile="images/section/h-10-m.png" alt="Section 10" class="section-image">
+    </section>
+        <section class="image-section">
+            <img src="images/section/h-11.png" data-mobile="images/section/h-11-m.png" alt="Section 11" class="section-image">
+        </section>
+    </section>
+
+    <!-- 유튜브 섹션 -->
+    <section class="youtube-promo-section" id="youtube">
+        <div class="container">
+            <h2 class="youtube-promo-title">차주분들의 실제 후기</h2>
+            <div class="youtube-promo-content">
+                <div class="youtube-video-wrapper">
+                    <video class="youtube-promo-video" muted loop playsinline preload="metadata">
+                        <source src="images/u-1.mp4" type="video/mp4">
+                    </video>
+                    <button class="youtube-play-btn" aria-label="재생">
+                        <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="40" cy="40" r="40" fill="rgba(0, 0, 0, 0.7)"/>
+                            <path d="M32 24L56 40L32 56V24Z" fill="white"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="youtube-promo-button-wrapper">
+                    <a href="https://www.youtube.com/@betterlogis/videos" target="_blank" class="youtube-promo-btn">
+                        유튜브 더보기 +
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 문의하기 섹션 -->
+    <section class="contact-section" id="contact">
+        <video class="contact-bg" autoplay muted loop playsinline>
+            <source src="images/h-bg.mp4" type="video/mp4">
+        </video>
+        <div class="contact-overlay"></div>
+        <div class="container">
+            <div class="contact-content">
+                <h2 class="contact-title">문의하기</h2>
+                <p class="contact-subtitle">더나은물류에 궁금한 점이 있으신가요? 언제든지 문의해주세요.</p>
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label for="name">이름</label>
+                        <input type="text" id="name" name="name" required placeholder="이름을 입력해주세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">연락처</label>
+                        <input type="tel" id="phone" name="phone" required placeholder="연락처를 입력해주세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">이메일</label>
+                        <input type="email" id="email" name="email" required placeholder="이메일을 입력해주세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">문의내용</label>
+                        <textarea id="message" name="message" rows="6" required placeholder="문의내용을 입력해주세요"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">문의하기</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <img src="images/logo_white.png" alt="더나은물류">
+                    </div>
+                    <p class="footer-description">당신의 든든한 동반자<br>더나은물류와 함께하세요</p>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">회사정보</h3>
+                    <ul class="footer-list">
+                        <li>대표: 임선택</li>
+                        <li>사업자등록번호: 208-81-30373</li>
+                        <li>경리부: 1800-9527</li>
+                        <li>김포 본사: 경기도 김포시 고촌읍 전호리 640, 지영빌딩 5층</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3 class="footer-title">빠른 링크</h3>
+                    <ul class="footer-list">
+                        <li><a href="#home">홈</a></li>
+                        <li><a href="#about">회사소개</a></li>
+                        <li><a href="#services">서비스</a></li>
+                        <li><a href="#contact">문의하기</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 더나은물류. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
