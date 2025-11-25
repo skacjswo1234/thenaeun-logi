@@ -84,3 +84,4 @@ export default {
   blog: blogAPI,
   contact: contactAPI,
 };
+

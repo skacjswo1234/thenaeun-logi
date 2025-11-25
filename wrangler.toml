@@ -12,3 +12,4 @@ preview_id = "your-preview-kv-namespace-id"
 # 환경 변수 설정 예시 (실제 사용시 추가)
 # [vars]
 # API_KEY = "your-secret-api-key"
+
