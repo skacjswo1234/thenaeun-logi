@@ -271,6 +271,21 @@ body.menu-open .menu-toggle span:nth-child(3) {
     overflow: hidden;
 }
 
+.hero-bg-placeholder {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    display: none;
+}
+
 .hero-bg {
     position: fixed;
     top: 0;

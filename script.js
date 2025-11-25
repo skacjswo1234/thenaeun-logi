@@ -512,47 +512,88 @@ function initMobileImages() {
 function initHeroVideoSequence() {
     const heroBg1 = document.getElementById('hero-bg-1');
     const heroBg1Source = document.getElementById('hero-bg-1-source');
+    const heroPlaceholder = document.getElementById('hero-bg-placeholder');
     
     if (!heroBg1 || !heroBg1Source) return;
     
+    const isMobile = window.innerWidth <= 768;
+    
     // 모바일 여부 확인 및 비디오 소스 설정
     function setHeroVideoSource() {
-        const isMobile = window.innerWidth <= 768;
-        if (isMobile) {
+        const isMobileNow = window.innerWidth <= 768;
+        if (isMobileNow) {
             heroBg1Source.src = 'images/h-1-m.mp4';
-            // 모바일에서는 preload를 none으로 설정하여 초기 로딩 최소화
             heroBg1.preload = 'none';
+            
+            // 모바일에서는 플레이스홀더에 첫 프레임 이미지 표시
+            if (heroPlaceholder) {
+                heroPlaceholder.style.backgroundImage = "url('images/section/h-1-m.png')";
+                heroPlaceholder.style.display = 'block';
+            }
         } else {
             heroBg1Source.src = 'images/h-1.mp4';
             heroBg1.preload = 'auto';
+            if (heroPlaceholder) {
+                heroPlaceholder.style.display = 'none';
+            }
         }
-        // 소스 변경 후 비디오 다시 로드
-        heroBg1.load();
     }
     
     // 초기 설정
     setHeroVideoSource();
     
-    // 모바일에서는 사용자가 스크롤하거나 상호작용할 때 비디오 로드
-    const isMobile = window.innerWidth <= 768;
+    // 모바일에서 비디오 로딩 전략
     if (isMobile) {
-        let videoLoaded = false;
-        const loadVideo = () => {
-            if (!videoLoaded) {
-                heroBg1.load();
-                heroBg1.play().catch(e => {
+        // 플레이스홀더를 먼저 표시하고, 비디오는 백그라운드에서 점진적으로 로드
+        let videoLoadStarted = false;
+        
+        const startVideoLoad = () => {
+            if (videoLoadStarted) return;
+            videoLoadStarted = true;
+            
+            // 비디오 메타데이터만 먼저 로드
+            heroBg1.preload = 'metadata';
+            heroBg1.load();
+            
+            // canplay 이벤트로 재생 가능할 때 재생 시작
+            const handleCanPlay = () => {
+                heroBg1.play().then(() => {
+                    // 비디오가 재생되면 플레이스홀더 숨기기
+                    if (heroPlaceholder) {
+                        heroPlaceholder.style.opacity = '0';
+                        setTimeout(() => {
+                            heroPlaceholder.style.display = 'none';
+                        }, 500);
+                    }
+                }).catch(e => {
                     console.log('비디오 자동 재생 차단됨:', e);
                 });
-                videoLoaded = true;
-            }
+                heroBg1.removeEventListener('canplay', handleCanPlay);
+            };
+            
+            heroBg1.addEventListener('canplay', handleCanPlay, { once: true });
+            
+            // 타임아웃: 3초 후에도 로드되지 않으면 플레이스홀더 유지
+            setTimeout(() => {
+                if (heroBg1.readyState < 2) {
+                    console.log('비디오 로딩이 느려서 플레이스홀더 유지');
+                }
+            }, 3000);
         };
         
-        // 사용자 상호작용 시 비디오 로드
-        document.addEventListener('touchstart', loadVideo, { once: true });
-        document.addEventListener('scroll', loadVideo, { once: true });
+        // 페이지 로드 후 약간의 지연을 두고 비디오 로드 시작
+        // 이렇게 하면 초기 페이지 로딩은 빠르게 유지됨
+        setTimeout(startVideoLoad, 1000);
         
-        // 또는 약간의 지연 후 자동 로드 (선택적)
-        setTimeout(loadVideo, 500);
+        // 사용자가 상호작용하면 즉시 로드 시작
+        document.addEventListener('touchstart', startVideoLoad, { once: true });
+        document.addEventListener('scroll', startVideoLoad, { once: true });
+    } else {
+        // 데스크톱에서는 즉시 로드
+        heroBg1.load();
+        heroBg1.play().catch(e => {
+            console.log('비디오 자동 재생 차단됨:', e);
+        });
     }
     
     // 리사이즈 이벤트 리스너
