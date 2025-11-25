@@ -1,0 +1,22 @@
+{
+  "name": "thenaeun-logi-blog-api",
+  "version": "1.0.0",
+  "description": "블로그 자동 배포 시스템 - Cloudflare Workers API",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "start": "wrangler dev"
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "blog",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

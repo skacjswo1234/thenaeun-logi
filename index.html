@@ -122,7 +122,7 @@
             <h2 class="youtube-promo-title">차주분들의 실제 후기</h2>
             <div class="youtube-promo-content">
                 <div class="youtube-video-wrapper">
-                    <video class="youtube-promo-video" muted loop playsinline preload="metadata">
+                    <video class="youtube-promo-video" muted loop playsinline preload="none">
                         <source src="images/u-1.mp4" type="video/mp4">
                     </video>
                     <button class="youtube-play-btn" aria-label="재생">
@@ -143,7 +143,7 @@
 
     <!-- 문의하기 섹션 -->
     <section class="contact-section" id="contact">
-        <video class="contact-bg" autoplay muted loop playsinline>
+        <video class="contact-bg" autoplay muted loop playsinline preload="none">
             <source src="images/h-bg.mp4" type="video/mp4">
         </video>
         <div class="contact-overlay"></div>
@@ -209,6 +209,12 @@
         </div>
     </footer>
 
+    <!-- API 설정 (Cloudflare Workers 배포 후 URL 변경 필요) -->
+    <script>
+        // Workers 배포 후 받은 실제 URL로 변경하세요
+        // 예: https://blog-api.your-subdomain.workers.dev
+        window.API_BASE_URL = 'https://your-worker-name.your-subdomain.workers.dev/api';
+    </script>
     <script src="script.js"></script>
 </body>
 </html>

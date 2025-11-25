@@ -520,8 +520,11 @@ function initHeroVideoSequence() {
         const isMobile = window.innerWidth <= 768;
         if (isMobile) {
             heroBg1Source.src = 'images/h-1-m.mp4';
+            // 모바일에서는 preload를 none으로 설정하여 초기 로딩 최소화
+            heroBg1.preload = 'none';
         } else {
             heroBg1Source.src = 'images/h-1.mp4';
+            heroBg1.preload = 'auto';
         }
         // 소스 변경 후 비디오 다시 로드
         heroBg1.load();
@@ -529,6 +532,28 @@ function initHeroVideoSequence() {
     
     // 초기 설정
     setHeroVideoSource();
+    
+    // 모바일에서는 사용자가 스크롤하거나 상호작용할 때 비디오 로드
+    const isMobile = window.innerWidth <= 768;
+    if (isMobile) {
+        let videoLoaded = false;
+        const loadVideo = () => {
+            if (!videoLoaded) {
+                heroBg1.load();
+                heroBg1.play().catch(e => {
+                    console.log('비디오 자동 재생 차단됨:', e);
+                });
+                videoLoaded = true;
+            }
+        };
+        
+        // 사용자 상호작용 시 비디오 로드
+        document.addEventListener('touchstart', loadVideo, { once: true });
+        document.addEventListener('scroll', loadVideo, { once: true });
+        
+        // 또는 약간의 지연 후 자동 로드 (선택적)
+        setTimeout(loadVideo, 500);
+    }
     
     // 리사이즈 이벤트 리스너
     let resizeTimer;
@@ -548,14 +573,21 @@ function initHeroVideoSequence() {
 // 페이지 로드 시 초기화
 // ============================================
 // ============================================
-// 문의폼 제출 처리
+// 문의폼 제출 처리 (Cloudflare Workers API 연동)
 // ============================================
 function initContactForm() {
     const contactForm = document.getElementById('contactForm');
     if (!contactForm) return;
     
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        
+        const submitBtn = contactForm.querySelector('.submit-btn');
+        const originalText = submitBtn.textContent;
+        
+        // 버튼 비활성화 및 로딩 상태
+        submitBtn.disabled = true;
+        submitBtn.textContent = '전송 중...';
         
         const formData = {
             name: document.getElementById('name').value,
@@ -564,14 +596,34 @@ function initContactForm() {
             message: document.getElementById('message').value
         };
         
-        // 여기에 실제 서버로 데이터를 전송하는 코드를 추가할 수 있습니다
-        // 예: fetch API 사용
-        
-        // 임시로 알림 표시
-        alert('문의가 접수되었습니다. 빠른 시일 내에 연락드리겠습니다.');
-        
-        // 폼 초기화
-        contactForm.reset();
+        try {
+            // API_BASE_URL이 설정되어 있는지 확인
+            const API_BASE_URL = window.API_BASE_URL || 'https://your-worker-name.your-subdomain.workers.dev/api';
+            
+            const response = await fetch(`${API_BASE_URL}/contact`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                alert('문의가 접수되었습니다. 빠른 시일 내에 연락드리겠습니다.');
+                contactForm.reset();
+            } else {
+                throw new Error(result.error || '전송 실패');
+            }
+        } catch (error) {
+            console.error('문의 제출 오류:', error);
+            alert(`문의 전송 중 오류가 발생했습니다: ${error.message}\n\nAPI 서버가 설정되지 않았을 수 있습니다.`);
+        } finally {
+            // 버튼 복원
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
     });
 }
 
@@ -584,6 +636,21 @@ function initYoutubePromoVideo() {
     const videoWrapper = document.querySelector('.youtube-video-wrapper');
     
     if (!video || !playBtn || !videoWrapper) return;
+    
+    // Intersection Observer로 뷰포트에 진입할 때만 비디오 로드
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // 뷰포트에 진입하면 비디오 로드
+                video.load();
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+    
+    observer.observe(videoWrapper);
     
     playBtn.addEventListener('click', () => {
         video.play();
@@ -604,6 +671,36 @@ function initYoutubePromoVideo() {
 }
 
 // ============================================
+// 문의하기 섹션 비디오 지연 로딩
+// ============================================
+function initContactVideoLazyLoad() {
+    const contactSection = document.querySelector('.contact-section');
+    const contactVideo = document.querySelector('.contact-bg');
+    
+    if (!contactSection || !contactVideo) return;
+    
+    // Intersection Observer로 뷰포트에 진입할 때만 비디오 로드
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // 뷰포트에 진입하면 비디오 로드 및 재생
+                contactVideo.load();
+                contactVideo.play().catch(e => {
+                    // 자동 재생이 차단된 경우 무시
+                    console.log('비디오 자동 재생 차단됨:', e);
+                });
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '100px' // 섹션에 100px 전에 미리 로드
+    });
+    
+    observer.observe(contactSection);
+}
+
+// ============================================
 // 페이지 로드 시 초기화
 // ============================================
 window.addEventListener('DOMContentLoaded', () => {
@@ -615,4 +712,5 @@ window.addEventListener('DOMContentLoaded', () => {
     initHeroVideoSequence();
     initYoutubePromoVideo();
     initContactForm();
+    initContactVideoLazyLoad();
 });
