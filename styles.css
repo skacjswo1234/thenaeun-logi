@@ -1158,6 +1158,19 @@ body.menu-open .menu-toggle span:nth-child(3) {
     opacity: 0.95;
 }
 
+/* 모바일에서 히어로 섹션 애니메이션 제거 */
+@media (max-width: 768px) {
+    .hero-sub-copy {
+        animation: none !important;
+        opacity: 1 !important;
+    }
+    
+    .hero-main-copy,
+    .hero-strong-message {
+        animation: none !important;
+    }
+}
+
 .hero-strong-message {
     font-size: 2.5rem;
     font-weight: 800;

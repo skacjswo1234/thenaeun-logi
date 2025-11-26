@@ -318,6 +318,21 @@ function initHeroTextAnimation() {
     
     if (!mainCopy) return;
     
+    // 모바일에서는 애니메이션 없이 즉시 텍스트 표시
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        const mainText = mainCopy.getAttribute('data-text');
+        // 모바일: 애니메이션 없이 즉시 전체 텍스트 표시
+        if (mainText) {
+            mainCopy.innerHTML = mainText;
+            // 하이라이트 적용
+            applyHighlightAfterTyping(mainCopy, ['83세', '은퇴'], 'highlight-accent');
+        }
+        return;
+    }
+    
+    // 데스크톱: 타이핑 애니메이션 사용
     const mainText = mainCopy.getAttribute('data-text');
     
     // 초기 텍스트 비우기
@@ -921,29 +936,34 @@ function initMobileViewportFix() {
     
     // 강력한 뷰포트 고정 함수
     function fixViewportSize() {
+        // visualViewport API 사용 (지원되는 경우)
+        const viewportWidth = window.visualViewport ? window.visualViewport.width : window.innerWidth;
         const currentWidth = window.innerWidth;
         const fixedWidth = initialWidth;
         
-        // HTML과 Body 너비 강제 고정
-        document.documentElement.style.width = `${fixedWidth}px`;
-        document.documentElement.style.maxWidth = `${fixedWidth}px`;
-        document.documentElement.style.minWidth = `${fixedWidth}px`;
-        document.documentElement.style.overflowX = 'hidden';
-        document.documentElement.style.marginLeft = '0';
-        document.documentElement.style.marginRight = '0';
-        document.documentElement.style.paddingLeft = '0';
-        document.documentElement.style.paddingRight = '0';
+        // 실제 사용할 너비 결정 (visualViewport 우선)
+        const targetWidth = window.visualViewport ? Math.max(viewportWidth, fixedWidth) : fixedWidth;
         
-        document.body.style.width = `${fixedWidth}px`;
-        document.body.style.maxWidth = `${fixedWidth}px`;
-        document.body.style.minWidth = `${fixedWidth}px`;
-        document.body.style.overflowX = 'hidden';
-        document.body.style.marginLeft = '0';
-        document.body.style.marginRight = '0';
-        document.body.style.paddingLeft = '0';
-        document.body.style.paddingRight = '0';
-        document.body.style.left = '0';
-        document.body.style.right = '0';
+        // HTML과 Body 너비 강제 고정
+        document.documentElement.style.setProperty('width', `${targetWidth}px`, 'important');
+        document.documentElement.style.setProperty('max-width', `${targetWidth}px`, 'important');
+        document.documentElement.style.setProperty('min-width', `${targetWidth}px`, 'important');
+        document.documentElement.style.setProperty('overflow-x', 'hidden', 'important');
+        document.documentElement.style.setProperty('margin-left', '0', 'important');
+        document.documentElement.style.setProperty('margin-right', '0', 'important');
+        document.documentElement.style.setProperty('padding-left', '0', 'important');
+        document.documentElement.style.setProperty('padding-right', '0', 'important');
+        
+        document.body.style.setProperty('width', `${targetWidth}px`, 'important');
+        document.body.style.setProperty('max-width', `${targetWidth}px`, 'important');
+        document.body.style.setProperty('min-width', `${targetWidth}px`, 'important');
+        document.body.style.setProperty('overflow-x', 'hidden', 'important');
+        document.body.style.setProperty('margin-left', '0', 'important');
+        document.body.style.setProperty('margin-right', '0', 'important');
+        document.body.style.setProperty('padding-left', '0', 'important');
+        document.body.style.setProperty('padding-right', '0', 'important');
+        document.body.style.setProperty('left', '0', 'important');
+        document.body.style.setProperty('right', '0', 'important');
         
         // 모든 주요 요소에 너비 고정
         const allElements = document.querySelectorAll('*');
@@ -953,14 +973,24 @@ function initMobileViewportFix() {
             
             // fixed나 absolute인 요소만 처리
             if (position === 'fixed' || position === 'absolute') {
-                el.style.maxWidth = '100%';
-                el.style.overflowX = 'hidden';
+                el.style.setProperty('max-width', '100%', 'important');
+                el.style.setProperty('overflow-x', 'hidden', 'important');
+                el.style.setProperty('left', '0', 'important');
+                el.style.setProperty('right', '0', 'important');
             }
         });
         
         // 가로 스크롤 완전 차단
         if (window.scrollX !== 0) {
             window.scrollTo(0, window.scrollY);
+        }
+        
+        // documentElement의 scrollLeft도 0으로 고정
+        if (document.documentElement.scrollLeft !== 0) {
+            document.documentElement.scrollLeft = 0;
+        }
+        if (document.body.scrollLeft !== 0) {
+            document.body.scrollLeft = 0;
         }
     }
     
@@ -972,21 +1002,50 @@ function initMobileViewportFix() {
         document.addEventListener('DOMContentLoaded', fixViewportSize);
     }
     
-    // 스크롤 시 즉시 복원 (매 프레임마다)
+    // 스크롤 시 즉시 복원 (매 프레임마다) - 스크롤 방향 감지
     let lastScrollY = window.scrollY;
+    let scrollDirection = 'down';
+    
     window.addEventListener('scroll', () => {
         const currentScrollY = window.scrollY;
+        
+        // 스크롤 방향 감지
+        if (currentScrollY > lastScrollY) {
+            scrollDirection = 'down';
+        } else if (currentScrollY < lastScrollY) {
+            scrollDirection = 'up';
+        }
         
         // 가로 스크롤 즉시 차단
         if (window.scrollX !== 0) {
             window.scrollTo(0, currentScrollY);
         }
         
-        // 스크롤 중에도 너비 고정 유지
+        // 스크롤 중에도 너비 고정 유지 (특히 올릴 때 강제 적용)
         fixViewportSize();
+        
+        // 스크롤 올릴 때 추가 강제 고정
+        if (scrollDirection === 'up') {
+            // 즉시 여러 번 적용하여 여백 방지
+            fixViewportSize();
+            requestAnimationFrame(() => {
+                fixViewportSize();
+            });
+        }
         
         lastScrollY = currentScrollY;
     }, { passive: true });
+    
+    // visualViewport API 사용 (iOS Safari 대응)
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', () => {
+            fixViewportSize();
+        });
+        
+        window.visualViewport.addEventListener('scroll', () => {
+            fixViewportSize();
+        });
+    }
     
     // requestAnimationFrame으로 지속적 모니터링
     function continuousFix() {
