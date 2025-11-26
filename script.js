@@ -395,9 +395,17 @@ function initHeroBackgroundControl() {
     
     if (!heroBgs.length || !servicesSection) return;
     
+    // 모바일에서는 애니메이션 없이 즉시 처리
+    const isMobile = window.innerWidth <= 768;
+    
     let ticking = false;
     
     function updateHeroBg() {
+        // 모바일에서는 애니메이션 없이 그냥 내려가도록
+        if (isMobile) {
+            return;
+        }
+        
         const servicesSectionTop = servicesSection.offsetTop;
         const scrollPosition = window.scrollY;
         
@@ -415,19 +423,22 @@ function initHeroBackgroundControl() {
         ticking = false;
     }
     
-    // 스크롤 이벤트 리스너 (throttling 적용)
-    function onScroll() {
-        if (!ticking) {
-            window.requestAnimationFrame(updateHeroBg);
-            ticking = true;
+    // 모바일에서는 스크롤 이벤트 리스너 추가하지 않음
+    if (!isMobile) {
+        // 스크롤 이벤트 리스너 (throttling 적용)
+        function onScroll() {
+            if (!ticking) {
+                window.requestAnimationFrame(updateHeroBg);
+                ticking = true;
+            }
         }
+        
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', updateHeroBg);
+        
+        // 초기 상태 설정
+        updateHeroBg();
     }
-    
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', updateHeroBg);
-    
-    // 초기 상태 설정
-    updateHeroBg();
 }
 
 // ============================================

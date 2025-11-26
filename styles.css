@@ -1238,6 +1238,38 @@ body.menu-open .menu-toggle span:nth-child(3) {
         overflow-x: hidden;
         box-sizing: border-box;
     }
+    
+    /* 유튜브 섹션 모바일 스타일 */
+    .youtube-promo-section {
+        padding: 60px 20px;
+    }
+
+    .youtube-promo-title {
+        font-size: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .youtube-promo-content {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+    
+    /* 모바일: 버튼을 영상 아래 배치 */
+    .youtube-video-wrapper {
+        order: 1;
+    }
+    
+    .youtube-promo-button-wrapper {
+        order: 2;
+        padding: 1rem 0;
+    }
+
+    .youtube-promo-btn {
+        padding: 1.2rem 2.5rem;
+        font-size: 1.2rem;
+        letter-spacing: 0 !important;
+        text-indent: 0 !important;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1429,12 +1461,25 @@ body.menu-open .menu-toggle span:nth-child(3) {
     }
 
     .youtube-promo-content {
+        grid-template-columns: 1fr;
         gap: 2rem;
+    }
+    
+    /* 모바일: 버튼을 영상 아래 배치 */
+    .youtube-video-wrapper {
+        order: 1;
+    }
+    
+    .youtube-promo-button-wrapper {
+        order: 2;
+        padding: 1rem 0;
     }
 
     .youtube-promo-btn {
         padding: 1rem 2rem;
         font-size: 1rem;
+        letter-spacing: 0 !important;
+        text-indent: 0 !important;
     }
 
     .contact-section {
@@ -1609,12 +1654,25 @@ body.menu-open .menu-toggle span:nth-child(3) {
     }
 
     .youtube-promo-content {
+        grid-template-columns: 1fr;
         gap: 1.5rem;
+    }
+    
+    /* 모바일: 버튼을 영상 아래 배치 */
+    .youtube-video-wrapper {
+        order: 1;
+    }
+    
+    .youtube-promo-button-wrapper {
+        order: 2;
+        padding: 1rem 0;
     }
 
     .youtube-promo-btn {
         padding: 0.9rem 1.8rem;
         font-size: 0.95rem;
+        letter-spacing: 0 !important;
+        text-indent: 0 !important;
     }
 
     .contact-section {
