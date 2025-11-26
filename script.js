@@ -924,36 +924,56 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
-// 모바일 뷰포트 고정 및 가로 스크롤 방지
+// 모바일 뷰포트 고정 (완전히 새로 작성)
 // ============================================
 function initMobileViewportFix() {
     if (window.innerWidth > 768) return;
     
-    // 가로 스크롤 방지
-    function preventHorizontalScroll() {
+    // visualViewport API 사용
+    const vw = window.visualViewport || window;
+    let fixedWidth = vw.width;
+    
+    // body 너비를 visualViewport 너비로 고정
+    function fixBodyWidth() {
+        const currentWidth = vw.width;
+        fixedWidth = currentWidth;
+        
+        // body 너비 강제 고정
+        document.body.style.width = `${fixedWidth}px`;
+        document.body.style.maxWidth = `${fixedWidth}px`;
+        document.body.style.minWidth = `${fixedWidth}px`;
+        document.body.style.overflowX = 'hidden';
+        document.body.style.marginLeft = '0';
+        document.body.style.marginRight = '0';
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        
+        // html도 고정
+        document.documentElement.style.width = `${fixedWidth}px`;
+        document.documentElement.style.maxWidth = `${fixedWidth}px`;
+        document.documentElement.style.minWidth = `${fixedWidth}px`;
+        document.documentElement.style.overflowX = 'hidden';
+        
+        // 가로 스크롤 차단
         if (window.scrollX !== 0) {
             window.scrollTo(0, window.scrollY);
         }
-        if (document.documentElement.scrollLeft !== 0) {
-            document.documentElement.scrollLeft = 0;
-        }
-        if (document.body.scrollLeft !== 0) {
-            document.body.scrollLeft = 0;
-        }
+    }
+    
+    // visualViewport 변경 감지
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', fixBodyWidth);
+        window.visualViewport.addEventListener('scroll', fixBodyWidth);
     }
     
     // 스크롤 이벤트
-    window.addEventListener('scroll', preventHorizontalScroll, { passive: true });
-    
-    // 터치 이벤트
-    document.addEventListener('touchmove', (e) => {
-        if (e.touches.length > 1) return; // 핀치 줌 허용
-        preventHorizontalScroll();
-    }, { passive: true });
+    window.addEventListener('scroll', fixBodyWidth, { passive: true });
     
     // 리사이즈 이벤트
-    window.addEventListener('resize', preventHorizontalScroll);
+    window.addEventListener('resize', fixBodyWidth);
     
     // 초기 실행
-    preventHorizontalScroll();
+    fixBodyWidth();
+    setTimeout(fixBodyWidth, 100);
+    setTimeout(fixBodyWidth, 300);
 }
