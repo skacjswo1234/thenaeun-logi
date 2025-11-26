@@ -10,6 +10,13 @@ html {
     /* 모바일 스크롤바 숨김 */
     scrollbar-width: none;
     -ms-overflow-style: none;
+    /* 뷰포트 크기 고정 */
+    position: relative;
+    min-height: 100%;
+    /* 배경색 설정 - 스크롤 시 여백 방지 */
+    background-color: #000000;
+    margin: 0;
+    padding: 0;
 }
 
 html::-webkit-scrollbar {
@@ -22,21 +29,35 @@ body {
     color: #333;
     width: 100%;
     max-width: 100vw;
+    min-width: 100%;
     overflow-x: hidden;
     overflow-y: auto;
     background-color: #000000;
     /* 모바일 스크롤 흔들림 방지 */
     overscroll-behavior-y: none;
+    overscroll-behavior-x: none;
     -webkit-overflow-scrolling: touch;
     position: relative;
     /* 가로 스크롤 완전 차단 */
     touch-action: pan-y pinch-zoom;
+    /* 뷰포트 크기 고정 */
+    margin: 0;
+    padding: 0;
+    /* 배경색이 항상 화면을 덮도록 */
+    background-attachment: fixed;
+    background-size: cover;
 }
 
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+    position: relative;
+}
+
+/* 문의폼 섹션의 컨테이너는 명시적으로 z-index 보장 */
+.contact-section .container {
+    z-index: 5;
 }
 
 /* 헤더 스타일 */
@@ -311,6 +332,7 @@ body.menu-open .menu-toggle span:nth-child(3) {
     left: 0;
     width: 100%;
     max-width: 100vw;
+    min-width: 100%;
     height: 100vh;
     object-fit: cover;
     z-index: 1;
@@ -324,6 +346,9 @@ body.menu-open .menu-toggle span:nth-child(3) {
     -webkit-backface-visibility: hidden;
     /* 가로 스크롤 방지 */
     overflow-x: hidden;
+    /* 뷰포트 크기 고정 */
+    margin: 0;
+    padding: 0;
 }
 
 .hero-overlay {
@@ -907,6 +932,9 @@ body.menu-open .menu-toggle span:nth-child(3) {
     display: flex;
     align-items: center;
     justify-content: center;
+    /* 새로운 stacking context 생성 - 비디오 재생 시에도 레이어링 유지 */
+    isolation: isolate;
+    z-index: 0;
 }
 
 .contact-bg {
@@ -918,6 +946,10 @@ body.menu-open .menu-toggle span:nth-child(3) {
     object-fit: cover;
     z-index: 1;
     pointer-events: none;
+    /* 비디오 재생 시에도 항상 뒤에 위치 */
+    will-change: auto;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 .contact-overlay {
@@ -925,22 +957,27 @@ body.menu-open .menu-toggle span:nth-child(3) {
     top: 0;
     left: 0;
     width: 100%;
-   
+    height: 100%;
     background: linear-gradient(
         to bottom,
         rgba(255, 255, 255, 0.85),
         rgba(255, 255, 255, 0.9)
     );
     z-index: 2;
+    /* 오버레이가 항상 비디오 위에 */
+    pointer-events: none;
 }
 
 .contact-content {
     position: relative;
-    z-index: 3;
+    z-index: 10;
     max-width: 800px;
     margin: 0 auto;
     text-align: center;
     width: 100%;
+    /* 문의폼이 항상 최상위에 표시되도록 */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 .contact-title {
@@ -964,6 +1001,9 @@ body.menu-open .menu-toggle span:nth-child(3) {
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(30, 60, 114, 0.1);
     border: 1px solid #e0e0e0;
+    /* 문의폼이 항상 보이도록 */
+    position: relative;
+    z-index: 10;
 }
 
 .form-group {
@@ -1209,13 +1249,19 @@ body.menu-open .menu-toggle span:nth-child(3) {
         touch-action: pan-y pinch-zoom;
         width: 100%;
         max-width: 100vw;
+        min-width: 100%;
         overflow-x: hidden;
         position: relative;
-        /* 뷰포트 크기 고정 */
+        /* 뷰포트 크기 고정 - 스크롤 방향과 무관하게 동일하게 유지 */
         min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        /* 뷰포트 크기 변화 방지 */
+        overflow-y: auto;
+        -webkit-text-size-adjust: 100%;
     }
     
-    /* 모든 섹션 가로 스크롤 방지 */
+    /* 모든 섹션 가로 스크롤 방지 및 너비 고정 */
     section,
     .hero,
     .services-section,
@@ -1224,16 +1270,45 @@ body.menu-open .menu-toggle span:nth-child(3) {
     .youtube-promo-section {
         width: 100%;
         max-width: 100vw;
+        min-width: 100%;
         overflow-x: hidden;
+        /* 뷰포트 크기 변화 방지 */
+        box-sizing: border-box;
+        margin-left: 0;
+        margin-right: 0;
     }
     
     /* 모든 컨테이너 가로 스크롤 방지 */
     .container {
         width: 100%;
         max-width: 100vw;
+        min-width: 100%;
         overflow-x: hidden;
         padding-left: 20px;
         padding-right: 20px;
+        box-sizing: border-box;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    /* 헤더 너비 고정 */
+    .header {
+        width: 100%;
+        max-width: 100vw;
+        min-width: 100%;
+        left: 0;
+        right: 0;
+        box-sizing: border-box;
+    }
+    
+    /* 히어로 배경 비디오 너비 고정 */
+    .hero-bg {
+        width: 100%;
+        max-width: 100vw;
+        min-width: 100%;
+        left: 0;
+        right: 0;
+        box-sizing: border-box;
     }
     
     .nav {

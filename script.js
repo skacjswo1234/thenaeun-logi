@@ -825,8 +825,28 @@ function initYoutubePromoVideo() {
 function initContactVideoLazyLoad() {
     const contactSection = document.querySelector('.contact-section');
     const contactVideo = document.querySelector('.contact-bg');
+    const contactContent = document.querySelector('.contact-content');
+    const contactOverlay = document.querySelector('.contact-overlay');
     
     if (!contactSection || !contactVideo) return;
+    
+    // 문의폼이 항상 보이도록 z-index 보장
+    function ensureContactVisibility() {
+        if (contactContent) {
+            contactContent.style.zIndex = '10';
+            contactContent.style.position = 'relative';
+        }
+        if (contactOverlay) {
+            contactOverlay.style.zIndex = '2';
+        }
+        if (contactVideo) {
+            contactVideo.style.zIndex = '1';
+            contactVideo.style.pointerEvents = 'none';
+        }
+    }
+    
+    // 초기 설정
+    ensureContactVisibility();
     
     // Intersection Observer로 뷰포트에 진입할 때만 비디오 로드
     const observer = new IntersectionObserver((entries) => {
@@ -838,6 +858,8 @@ function initContactVideoLazyLoad() {
                     // 자동 재생이 차단된 경우 무시
                     console.log('비디오 자동 재생 차단됨:', e);
                 });
+                // 비디오 로드 후에도 문의폼이 보이도록
+                ensureContactVisibility();
                 observer.unobserve(entry.target);
             }
         });
@@ -847,6 +869,27 @@ function initContactVideoLazyLoad() {
     });
     
     observer.observe(contactSection);
+    
+    // 비디오 이벤트 리스너 - 재생 시작/재시작 시에도 문의폼이 보이도록
+    contactVideo.addEventListener('play', () => {
+        ensureContactVisibility();
+    });
+    
+    contactVideo.addEventListener('loadeddata', () => {
+        ensureContactVisibility();
+    });
+    
+    contactVideo.addEventListener('canplay', () => {
+        ensureContactVisibility();
+    });
+    
+    // 비디오가 loop로 재시작될 때도 확인
+    contactVideo.addEventListener('timeupdate', () => {
+        // 비디오가 끝나고 다시 시작될 때를 감지 (0초 근처)
+        if (contactVideo.currentTime < 0.5 && contactVideo.readyState >= 2) {
+            ensureContactVisibility();
+        }
+    });
 }
 
 // ============================================
@@ -873,32 +916,50 @@ function initMobileViewportFix() {
     
     if (!isMobile) return;
     
-    // 가로 스크롤 완전 차단
-    function preventHorizontalScroll() {
+    // 초기 뷰포트 크기 저장 (스크롤 방향과 무관하게 유지)
+    let initialWidth = window.innerWidth;
+    let initialHeight = window.innerHeight;
+    
+    // 뷰포트 너비/높이 고정 함수
+    function fixViewportSize() {
+        // 현재 뷰포트 크기와 초기 크기 비교
+        const currentWidth = window.innerWidth;
+        const currentHeight = window.innerHeight;
+        
+        // 너비가 변경되면 초기값으로 복원
+        if (currentWidth !== initialWidth) {
+            document.documentElement.style.width = `${initialWidth}px`;
+            document.body.style.width = `${initialWidth}px`;
+        } else {
+            // 너비가 같으면 현재 너비로 고정
+            document.documentElement.style.width = `${currentWidth}px`;
+            document.body.style.width = `${currentWidth}px`;
+        }
+        
+        // 높이는 최대값으로 고정 (주소창 숨김 상태 기준)
+        const maxHeight = Math.max(initialHeight, currentHeight);
+        document.documentElement.style.setProperty('--vh', `${maxHeight * 0.01}px`);
+        
+        // 가로 스크롤 완전 차단
         document.documentElement.style.overflowX = 'hidden';
         document.body.style.overflowX = 'hidden';
-        document.documentElement.style.maxWidth = '100vw';
-        document.body.style.maxWidth = '100vw';
+        document.documentElement.style.maxWidth = `${initialWidth}px`;
+        document.body.style.maxWidth = `${initialWidth}px`;
         
-        // 모든 섹션에 가로 스크롤 방지
-        const allSections = document.querySelectorAll('section, .container, .hero, .services-section, .image-section, .contact-section, .youtube-promo-section');
+        // 모든 섹션에 가로 스크롤 방지 및 너비 고정
+        const allSections = document.querySelectorAll('section, .container, .hero, .services-section, .image-section, .contact-section, .youtube-promo-section, .header, .hero-bg');
         allSections.forEach(el => {
             el.style.overflowX = 'hidden';
-            el.style.maxWidth = '100vw';
+            el.style.maxWidth = `${initialWidth}px`;
+            el.style.width = '100%';
         });
     }
     
-    // 뷰포트 높이 고정 (iOS Safari 주소창 변화 방지)
-    function fixViewportHeight() {
-        const vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty('--vh', `${vh}px`);
-    }
-    
     // 초기 설정
-    preventHorizontalScroll();
-    fixViewportHeight();
+    fixViewportSize();
     
-    // 스크롤 시 가로 스크롤 방지
+    // 스크롤 시에도 뷰포트 크기 일관성 유지 (즉시 복원)
+    let scrollTicking = false;
     let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
     
     window.addEventListener('scroll', () => {
@@ -909,16 +970,42 @@ function initMobileViewportFix() {
             window.scrollTo(0, currentScrollTop);
         }
         
+        // 스크롤 중에도 뷰포트 크기 즉시 유지 (throttling 적용하되 빠르게 복원)
+        if (!scrollTicking) {
+            // 즉시 실행하여 스크롤 중에도 여백이 생기지 않도록
+            fixViewportSize();
+            
+            window.requestAnimationFrame(() => {
+                fixViewportSize();
+                scrollTicking = false;
+            });
+            scrollTicking = true;
+        }
+        
         lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
     }, { passive: true });
     
-    // 리사이즈 시 뷰포트 높이 재계산
+    // 리사이즈 시 뷰포트 크기 재고정 (방향 변경 등)
     let resizeTimer;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
-            fixViewportHeight();
-            preventHorizontalScroll();
+            // 너비가 실제로 변경된 경우에만 초기값 업데이트
+            const newWidth = window.innerWidth;
+            if (Math.abs(newWidth - initialWidth) > 10) {
+                initialWidth = newWidth;
+            }
+            initialHeight = Math.max(initialHeight, window.innerHeight);
+            fixViewportSize();
+        }, 50);
+    });
+    
+    // 화면 방향 변경 시
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            initialWidth = window.innerWidth;
+            initialHeight = window.innerHeight;
+            fixViewportSize();
         }, 100);
     });
     
@@ -942,4 +1029,20 @@ function initMobileViewportFix() {
             e.preventDefault();
         }
     }, { passive: false });
+    
+    // 지속적으로 뷰포트 크기 모니터링 (주소창 변화 감지)
+    let monitorInterval = setInterval(() => {
+        const currentWidth = window.innerWidth;
+        if (currentWidth !== initialWidth && Math.abs(currentWidth - initialWidth) > 10) {
+            initialWidth = currentWidth;
+            fixViewportSize();
+        }
+    }, 100);
+    
+    // 페이지 언로드 시 interval 정리
+    window.addEventListener('beforeunload', () => {
+        if (monitorInterval) {
+            clearInterval(monitorInterval);
+        }
+    });
 }
