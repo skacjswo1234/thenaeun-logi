@@ -1203,15 +1203,22 @@ body.menu-open .menu-toggle span:nth-child(3) {
     
     /* 히어로 섹션 */
     .hero-bg {
+        position: absolute !important; /* fixed에서 absolute로 변경 - 스크롤 가능하도록 */
+        top: 0;
+        left: 0;
         object-fit: cover;
         width: 100%;
         max-width: 100vw;
+        height: 100%; /* 100vh 대신 100%로 변경 */
     }
     
     .hero {
-        overflow: hidden;
+        overflow: visible; /* hidden에서 visible로 변경 - 스크롤 가능하도록 */
         width: 100%;
         max-width: 100vw;
+        height: auto; /* 100vh 제거 */
+        min-height: 100vh; /* 최소 높이만 설정 */
+        position: relative;
     }
     
     .header {
