@@ -380,6 +380,8 @@ function initHeroBackgroundControl() {
     
     if (!heroBgs.length || !servicesSection) return;
     
+    let ticking = false;
+    
     function updateHeroBg() {
         const servicesSectionTop = servicesSection.offsetTop;
         const scrollPosition = window.scrollY;
@@ -394,10 +396,19 @@ function initHeroBackgroundControl() {
                 heroBg.style.pointerEvents = 'none';
             }
         });
+        
+        ticking = false;
     }
     
-    // 스크롤 이벤트 리스너
-    window.addEventListener('scroll', updateHeroBg);
+    // 스크롤 이벤트 리스너 (throttling 적용)
+    function onScroll() {
+        if (!ticking) {
+            window.requestAnimationFrame(updateHeroBg);
+            ticking = true;
+        }
+    }
+    
+    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', updateHeroBg);
     
     // 초기 상태 설정
@@ -405,19 +416,28 @@ function initHeroBackgroundControl() {
 }
 
 // ============================================
-// 헤더 스크롤 효과
+// 헤더 스크롤 효과 (성능 최적화)
 // ============================================
 function initHeaderScroll() {
     const header = document.querySelector('.header');
     const navList = document.querySelector('.nav-list');
     if (!header) return;
     
+    let ticking = false;
+    let lastScrollY = window.scrollY;
+    
     function updateHeader() {
-        if (window.scrollY > 50) {
+        const scrollY = window.scrollY;
+        
+        // 스크롤 방향 확인 (모바일에서 더 부드러운 전환을 위해)
+        if (scrollY > 50) {
             header.classList.add('scrolled');
         } else {
             header.classList.remove('scrolled');
         }
+        
+        lastScrollY = scrollY;
+        ticking = false;
     }
     
     // 네비게이션 항목 호버 시 헤더 배경 변경
@@ -434,19 +454,28 @@ function initHeaderScroll() {
         });
     }
     
-    // 스크롤 이벤트 리스너
-    window.addEventListener('scroll', updateHeader);
+    // 스크롤 이벤트 리스너 (throttling 적용)
+    function onScroll() {
+        if (!ticking) {
+            window.requestAnimationFrame(updateHeader);
+            ticking = true;
+        }
+    }
+    
+    window.addEventListener('scroll', onScroll, { passive: true });
     
     // 초기 상태 설정
     updateHeader();
 }
 
 // ============================================
-// TOP 버튼 스크롤 표시/숨김
+// TOP 버튼 스크롤 표시/숨김 (성능 최적화)
 // ============================================
 function initTopButton() {
     const topBtn = document.querySelector('.top-btn');
     if (!topBtn) return;
+    
+    let ticking = false;
     
     function handleScroll() {
         if (window.scrollY > 300) {
@@ -454,9 +483,19 @@ function initTopButton() {
         } else {
             topBtn.classList.remove('show');
         }
+        
+        ticking = false;
     }
     
-    window.addEventListener('scroll', handleScroll);
+    // 스크롤 이벤트 리스너 (throttling 적용)
+    function onScroll() {
+        if (!ticking) {
+            window.requestAnimationFrame(handleScroll);
+            ticking = true;
+        }
+    }
+    
+    window.addEventListener('scroll', onScroll, { passive: true });
     // 초기 로드 시 상태 확인
     handleScroll();
 }
@@ -507,13 +546,23 @@ function initMobileImages() {
 }
 
 // ============================================
-// 히어로 배경 영상 모바일 처리
+// 히어로 배경 영상 모바일 처리 (순차 재생)
 // ============================================
 function initHeroVideoSequence() {
     const heroBg1 = document.getElementById('hero-bg-1');
     const heroBg1Source = document.getElementById('hero-bg-1-source');
     
     if (!heroBg1 || !heroBg1Source) return;
+    
+    // 모바일 비디오 시퀀스
+    const mobileVideos = [
+        'images/h-1-m.mp4',
+        'images/h-2-m.mp4',
+        'images/h-3-m.mp4'
+    ];
+    
+    let currentVideoIndex = 0;
+    let isSequencePlaying = false;
     
     // 네트워크 속도 감지
     function getNetworkSpeed() {
@@ -537,24 +586,72 @@ function initHeroVideoSequence() {
         return 'medium';
     }
     
+    // 다음 비디오로 전환
+    function playNextVideo() {
+        const isMobile = window.innerWidth <= 768;
+        
+        if (!isMobile) {
+            return; // 데스크톱에서는 순차 재생 비활성화
+        }
+        
+        // 다음 비디오 인덱스 계산 (무한 반복)
+        currentVideoIndex = (currentVideoIndex + 1) % mobileVideos.length;
+        
+        // 비디오 소스 변경
+        heroBg1Source.src = mobileVideos[currentVideoIndex];
+        heroBg1.load();
+        
+        // 다음 비디오가 재생 가능해지면 재생 시작
+        let hasStarted = false;
+        const playHandler = () => {
+            if (!hasStarted) {
+                hasStarted = true;
+                heroBg1.currentTime = 0;
+                heroBg1.play().catch(e => {
+                    console.log('비디오 자동 재생 차단됨:', e);
+                    hasStarted = false;
+                });
+            }
+        };
+        
+        // canplay 이벤트로 재생 시작 (once 옵션으로 한 번만 실행)
+        heroBg1.addEventListener('canplay', playHandler, { once: true });
+    }
+    
     // 모바일 여부 확인 및 비디오 소스 설정
     function setHeroVideoSource() {
         const isMobile = window.innerWidth <= 768;
         const networkSpeed = getNetworkSpeed();
         
         if (isMobile) {
-            // 모바일에서는 네트워크 속도에 따라 다른 전략 사용
+            // 모바일에서는 loop 속성 제거하고 순차 재생 사용
+            heroBg1.loop = false;
+            
+            // 네트워크 속도에 따라 다른 전략 사용
             if (networkSpeed === 'slow') {
-                // 느린 네트워크: preload를 none으로 설정하여 사용자가 스크롤하거나 상호작용할 때만 로드
                 heroBg1.preload = 'none';
             } else {
-                // 보통/빠른 네트워크: metadata만 먼저 로드
                 heroBg1.preload = 'metadata';
             }
-            heroBg1Source.src = 'images/h-1-m.mp4';
+            
+            // 첫 번째 비디오로 설정
+            currentVideoIndex = 0;
+            heroBg1Source.src = mobileVideos[currentVideoIndex];
+            
+            // 비디오가 끝나면 다음 비디오로 전환 (순차 재생)
+            // 기존 이벤트 리스너 제거 후 새로 추가 (중복 방지)
+            heroBg1.removeEventListener('ended', playNextVideo);
+            heroBg1.addEventListener('ended', playNextVideo);
+            isSequencePlaying = true;
         } else {
+            // 데스크톱에서는 기존 방식 유지 (단일 비디오, loop)
+            heroBg1.loop = true;
             heroBg1.preload = 'auto';
             heroBg1Source.src = 'images/h-1.mp4';
+            
+            // 순차 재생 이벤트 제거
+            heroBg1.removeEventListener('ended', playNextVideo);
+            isSequencePlaying = false;
         }
         
         // 소스 변경 후 비디오 다시 로드 (preload가 'none'이 아닌 경우에만)

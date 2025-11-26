@@ -10,6 +10,10 @@ body {
     color: #333;
     overflow-x: hidden;
     background-color: #000000;
+    /* 모바일 스크롤 흔들림 방지 */
+    overscroll-behavior-y: none;
+    -webkit-overflow-scrolling: touch;
+    position: relative;
 }
 
 .container {
@@ -26,8 +30,12 @@ body {
     width: 100%;
     background: transparent;
     z-index: 1000;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: none;
+    /* 모바일 성능 최적화 */
+    will-change: background-color, box-shadow;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 .header.scrolled {
@@ -269,6 +277,9 @@ body.menu-open .menu-toggle span:nth-child(3) {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    /* 모바일 스크롤 최적화 */
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .hero-bg {
@@ -281,6 +292,12 @@ body.menu-open .menu-toggle span:nth-child(3) {
     z-index: 1;
     pointer-events: none;
     transition: opacity 0.5s ease;
+    /* 모바일 성능 최적화 */
+    will-change: opacity;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
 }
 
 .hero-overlay {
@@ -1141,6 +1158,18 @@ body.menu-open .menu-toggle span:nth-child(3) {
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
+    /* 모바일 스크롤 최적화 */
+    html {
+        overscroll-behavior-y: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    body {
+        overscroll-behavior-y: none;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+    }
+    
     .nav {
         display: none;
     }
@@ -1151,10 +1180,25 @@ body.menu-open .menu-toggle span:nth-child(3) {
 
     .hero-bg {
         object-fit: cover;
+        /* 모바일 스크롤 성능 최적화 */
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
     }
     
     .hero {
         overflow: hidden;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .header {
+        /* 모바일 헤더 스크롤 최적화 */
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
     }
 
     .logo img {
