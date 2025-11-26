@@ -949,36 +949,48 @@ function initMobileViewportFix() {
         const currentWidth = vw.width;
         fixedWidth = currentWidth;
         
-        // body 너비 강제 고정
+        // body 너비 강제 고정 (세로 스크롤은 허용)
         document.body.style.width = `${fixedWidth}px`;
         document.body.style.maxWidth = `${fixedWidth}px`;
         document.body.style.minWidth = `${fixedWidth}px`;
         document.body.style.overflowX = 'hidden';
+        document.body.style.overflowY = 'auto'; // 세로 스크롤 명시적으로 허용
         document.body.style.marginLeft = '0';
         document.body.style.marginRight = '0';
         document.body.style.left = '0';
         document.body.style.right = '0';
+        document.body.style.height = 'auto'; // 높이는 자동으로 설정
         
-        // html도 고정
+        // html도 고정 (세로 스크롤은 허용)
         document.documentElement.style.width = `${fixedWidth}px`;
         document.documentElement.style.maxWidth = `${fixedWidth}px`;
         document.documentElement.style.minWidth = `${fixedWidth}px`;
         document.documentElement.style.overflowX = 'hidden';
+        document.documentElement.style.overflowY = 'auto'; // 세로 스크롤 명시적으로 허용
         
-        // 가로 스크롤 차단
+        // 가로 스크롤만 차단 (세로 스크롤은 유지)
         if (window.scrollX !== 0) {
             window.scrollTo(0, window.scrollY);
         }
     }
     
-    // visualViewport 변경 감지
+    // visualViewport 변경 감지 (resize만, scroll은 제거)
     if (window.visualViewport) {
         window.visualViewport.addEventListener('resize', fixBodyWidth);
-        window.visualViewport.addEventListener('scroll', fixBodyWidth);
+        // scroll 이벤트는 제거 - 세로 스크롤 방해 방지
     }
     
-    // 스크롤 이벤트
-    window.addEventListener('scroll', fixBodyWidth, { passive: true });
+    // 스크롤 이벤트는 throttling으로 줄임 (가로 스크롤 방지만)
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            // 가로 스크롤만 체크하고 차단
+            if (window.scrollX !== 0) {
+                window.scrollTo(0, window.scrollY);
+            }
+        }, 100);
+    }, { passive: true });
     
     // 리사이즈 이벤트
     window.addEventListener('resize', fixBodyWidth);

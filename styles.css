@@ -1172,10 +1172,13 @@ body.menu-open .menu-toggle span:nth-child(3) {
         width: 100%;
         max-width: 100vw;
         overflow-x: hidden !important;
+        overflow-y: auto !important;
         position: relative;
         margin: 0;
         padding: 0;
         background-color: #000000;
+        height: auto !important;
+        min-height: 100vh;
     }
     
     /* 네비게이션 */
