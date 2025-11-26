@@ -212,15 +212,15 @@ async function handleContact(env, request) {
     const data = await request.json();
     
     // 필수 필드 검증
-    if (!data.name || !data.email || !data.message) {
-      return errorResponse('이름, 이메일, 문의내용은 필수입니다.');
+    if (!data.name || !data.age || !data.message) {
+      return errorResponse('이름, 나이, 문의내용은 필수입니다.');
     }
 
     const contact = {
       id: generateId(),
       name: data.name,
       phone: data.phone || '',
-      email: data.email,
+      age: data.age,
       message: data.message,
       createdAt: new Date().toISOString(),
       status: 'new', // new, read, replied
@@ -323,5 +323,6 @@ export default {
     }
   },
 };
+
 
 

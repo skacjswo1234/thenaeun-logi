@@ -142,7 +142,7 @@ Content-Type: application/json
 {
   "name": "홍길동",
   "phone": "010-1234-5678",
-  "email": "example@email.com",
+  "age": "30",
   "message": "문의 내용"
 }
 ```
@@ -186,5 +186,6 @@ Content-Type: application/json
 - [Cloudflare Workers 문서](https://developers.cloudflare.com/workers/)
 - [KV 저장소 문서](https://developers.cloudflare.com/kv/)
 - [Wrangler CLI 문서](https://developers.cloudflare.com/workers/wrangler/)
+
 
 

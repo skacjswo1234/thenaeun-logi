@@ -767,7 +767,7 @@ function initContactForm() {
         const formData = {
             name: document.getElementById('name').value,
             phone: document.getElementById('phone').value,
-            email: document.getElementById('email').value,
+            age: document.getElementById('age').value,
             message: document.getElementById('message').value
         };
         
