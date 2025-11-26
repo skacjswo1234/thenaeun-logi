@@ -909,140 +909,119 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
-// 모바일 뷰포트 고정 및 가로 스크롤 방지
+// 모바일 뷰포트 고정 및 가로 스크롤 방지 (강화 버전)
 // ============================================
 function initMobileViewportFix() {
     const isMobile = window.innerWidth <= 768;
     
     if (!isMobile) return;
     
-    // 초기 뷰포트 크기 저장 (스크롤 방향과 무관하게 유지)
-    let initialWidth = window.innerWidth;
-    let initialHeight = window.innerHeight;
+    // 초기 뷰포트 너비 저장 (절대 고정)
+    const initialWidth = window.innerWidth;
     
-    // 뷰포트 너비/높이 고정 함수
+    // 강력한 뷰포트 고정 함수
     function fixViewportSize() {
-        // 현재 뷰포트 크기와 초기 크기 비교
         const currentWidth = window.innerWidth;
-        const currentHeight = window.innerHeight;
+        const fixedWidth = initialWidth;
         
-        // 너비가 변경되면 초기값으로 복원
-        if (currentWidth !== initialWidth) {
-            document.documentElement.style.width = `${initialWidth}px`;
-            document.body.style.width = `${initialWidth}px`;
-        } else {
-            // 너비가 같으면 현재 너비로 고정
-            document.documentElement.style.width = `${currentWidth}px`;
-            document.body.style.width = `${currentWidth}px`;
-        }
+        // HTML과 Body 너비 강제 고정
+        document.documentElement.style.width = `${fixedWidth}px`;
+        document.documentElement.style.maxWidth = `${fixedWidth}px`;
+        document.documentElement.style.minWidth = `${fixedWidth}px`;
+        document.documentElement.style.overflowX = 'hidden';
+        document.documentElement.style.marginLeft = '0';
+        document.documentElement.style.marginRight = '0';
+        document.documentElement.style.paddingLeft = '0';
+        document.documentElement.style.paddingRight = '0';
         
-        // 높이는 최대값으로 고정 (주소창 숨김 상태 기준)
-        const maxHeight = Math.max(initialHeight, currentHeight);
-        document.documentElement.style.setProperty('--vh', `${maxHeight * 0.01}px`);
+        document.body.style.width = `${fixedWidth}px`;
+        document.body.style.maxWidth = `${fixedWidth}px`;
+        document.body.style.minWidth = `${fixedWidth}px`;
+        document.body.style.overflowX = 'hidden';
+        document.body.style.marginLeft = '0';
+        document.body.style.marginRight = '0';
+        document.body.style.paddingLeft = '0';
+        document.body.style.paddingRight = '0';
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        
+        // 모든 주요 요소에 너비 고정
+        const allElements = document.querySelectorAll('*');
+        allElements.forEach(el => {
+            const computedStyle = window.getComputedStyle(el);
+            const position = computedStyle.position;
+            
+            // fixed나 absolute인 요소만 처리
+            if (position === 'fixed' || position === 'absolute') {
+                el.style.maxWidth = '100%';
+                el.style.overflowX = 'hidden';
+            }
+        });
         
         // 가로 스크롤 완전 차단
-        document.documentElement.style.overflowX = 'hidden';
-        document.body.style.overflowX = 'hidden';
-        document.documentElement.style.maxWidth = `${initialWidth}px`;
-        document.body.style.maxWidth = `${initialWidth}px`;
-        
-        // 모든 섹션에 가로 스크롤 방지 및 너비 고정
-        const allSections = document.querySelectorAll('section, .container, .hero, .services-section, .image-section, .contact-section, .youtube-promo-section, .header, .hero-bg');
-        allSections.forEach(el => {
-            el.style.overflowX = 'hidden';
-            el.style.maxWidth = `${initialWidth}px`;
-            el.style.width = '100%';
-        });
+        if (window.scrollX !== 0) {
+            window.scrollTo(0, window.scrollY);
+        }
     }
     
-    // 초기 설정
+    // 초기 설정 (즉시 실행)
     fixViewportSize();
     
-    // 스크롤 시에도 뷰포트 크기 일관성 유지 (즉시 복원)
-    let scrollTicking = false;
-    let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    // DOM이 완전히 로드된 후 재적용
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', fixViewportSize);
+    }
     
+    // 스크롤 시 즉시 복원 (매 프레임마다)
+    let lastScrollY = window.scrollY;
     window.addEventListener('scroll', () => {
-        const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const currentScrollY = window.scrollY;
         
-        // 가로 스크롤 방지
+        // 가로 스크롤 즉시 차단
         if (window.scrollX !== 0) {
-            window.scrollTo(0, currentScrollTop);
+            window.scrollTo(0, currentScrollY);
         }
         
-        // 스크롤 중에도 뷰포트 크기 즉시 유지 (throttling 적용하되 빠르게 복원)
-        if (!scrollTicking) {
-            // 즉시 실행하여 스크롤 중에도 여백이 생기지 않도록
-            fixViewportSize();
-            
-            window.requestAnimationFrame(() => {
-                fixViewportSize();
-                scrollTicking = false;
-            });
-            scrollTicking = true;
-        }
+        // 스크롤 중에도 너비 고정 유지
+        fixViewportSize();
         
-        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+        lastScrollY = currentScrollY;
     }, { passive: true });
     
-    // 리사이즈 시 뷰포트 크기 재고정 (방향 변경 등)
-    let resizeTimer;
+    // requestAnimationFrame으로 지속적 모니터링
+    function continuousFix() {
+        fixViewportSize();
+        requestAnimationFrame(continuousFix);
+    }
+    continuousFix();
+    
+    // 리사이즈 이벤트
     window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            // 너비가 실제로 변경된 경우에만 초기값 업데이트
-            const newWidth = window.innerWidth;
-            if (Math.abs(newWidth - initialWidth) > 10) {
-                initialWidth = newWidth;
-            }
-            initialHeight = Math.max(initialHeight, window.innerHeight);
-            fixViewportSize();
-        }, 50);
+        fixViewportSize();
     });
     
-    // 화면 방향 변경 시
+    // 화면 방향 변경
     window.addEventListener('orientationchange', () => {
-        setTimeout(() => {
-            initialWidth = window.innerWidth;
-            initialHeight = window.innerHeight;
-            fixViewportSize();
-        }, 100);
+        setTimeout(fixViewportSize, 100);
+        setTimeout(fixViewportSize, 300);
+        setTimeout(fixViewportSize, 500);
     });
     
-    // 터치 이벤트에서 가로 스크롤 방지
+    // 터치 이벤트
     let touchStartX = 0;
-    let touchStartY = 0;
-    
     document.addEventListener('touchstart', (e) => {
         touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
+        fixViewportSize();
     }, { passive: true });
     
     document.addEventListener('touchmove', (e) => {
-        const touchX = e.touches[0].clientX;
-        const touchY = e.touches[0].clientY;
-        const diffX = Math.abs(touchX - touchStartX);
-        const diffY = Math.abs(touchY - touchStartY);
-        
-        // 가로 스크롤이 세로 스크롤보다 클 때 가로 스크롤 방지
-        if (diffX > diffY && diffX > 10) {
-            e.preventDefault();
+        fixViewportSize();
+        // 가로 스크롤 방지
+        if (window.scrollX !== 0) {
+            window.scrollTo(0, window.scrollY);
         }
-    }, { passive: false });
+    }, { passive: true });
     
-    // 지속적으로 뷰포트 크기 모니터링 (주소창 변화 감지)
-    let monitorInterval = setInterval(() => {
-        const currentWidth = window.innerWidth;
-        if (currentWidth !== initialWidth && Math.abs(currentWidth - initialWidth) > 10) {
-            initialWidth = currentWidth;
-            fixViewportSize();
-        }
-    }, 100);
-    
-    // 페이지 언로드 시 interval 정리
-    window.addEventListener('beforeunload', () => {
-        if (monitorInterval) {
-            clearInterval(monitorInterval);
-        }
-    });
+    // 인터벌로 추가 모니터링
+    setInterval(fixViewportSize, 50);
 }

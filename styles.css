@@ -30,7 +30,7 @@ body {
     width: 100%;
     max-width: 100vw;
     min-width: 100%;
-    overflow-x: hidden;
+    overflow-x: hidden !important;
     overflow-y: auto;
     background-color: #000000;
     /* 모바일 스크롤 흔들림 방지 */
@@ -41,11 +41,15 @@ body {
     /* 가로 스크롤 완전 차단 */
     touch-action: pan-y pinch-zoom;
     /* 뷰포트 크기 고정 */
-    margin: 0;
+    margin: 0 !important;
     padding: 0;
     /* 배경색이 항상 화면을 덮도록 */
     background-attachment: fixed;
     background-size: cover;
+    /* 좌우 여백 완전 차단 */
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
 }
 
 .container {
@@ -958,14 +962,12 @@ body.menu-open .menu-toggle span:nth-child(3) {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.85),
-        rgba(255, 255, 255, 0.9)
-    );
+    /* 하얀 배경 제거 - 투명하게 */
+    background: transparent;
     z-index: 2;
     /* 오버레이가 항상 비디오 위에 */
     pointer-events: none;
+    display: none; /* 완전히 숨김 */
 }
 
 .contact-content {
@@ -986,6 +988,8 @@ body.menu-open .menu-toggle span:nth-child(3) {
     margin-bottom: 1rem;
     color: white;
     letter-spacing: -0.5px;
+    /* 텍스트 그림자로 가독성 향상 */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 .contact-subtitle {
@@ -993,6 +997,8 @@ body.menu-open .menu-toggle span:nth-child(3) {
     margin-bottom: 3rem;
     color: white;
     line-height: 1.6;
+    /* 텍스트 그림자로 가독성 향상 */
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
 }
 
 .contact-form {
@@ -1232,14 +1238,20 @@ body.menu-open .menu-toggle span:nth-child(3) {
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-    /* 모바일 스크롤 최적화 */
+    /* 모바일 스크롤 최적화 - 강화 버전 */
     html {
         overscroll-behavior-y: none;
+        overscroll-behavior-x: none;
         -webkit-overflow-scrolling: touch;
-        width: 100%;
-        max-width: 100vw;
-        overflow-x: hidden;
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 100% !important;
+        overflow-x: hidden !important;
         position: relative;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
     
     body {
@@ -1247,18 +1259,22 @@ body.menu-open .menu-toggle span:nth-child(3) {
         overscroll-behavior-x: none;
         -webkit-overflow-scrolling: touch;
         touch-action: pan-y pinch-zoom;
-        width: 100%;
-        max-width: 100vw;
-        min-width: 100%;
-        overflow-x: hidden;
+        width: 100% !important;
+        max-width: 100vw !important;
+        min-width: 100% !important;
+        overflow-x: hidden !important;
         position: relative;
         /* 뷰포트 크기 고정 - 스크롤 방향과 무관하게 동일하게 유지 */
         min-height: 100vh;
-        margin: 0;
+        margin: 0 !important;
         padding: 0;
         /* 뷰포트 크기 변화 방지 */
         overflow-y: auto;
         -webkit-text-size-adjust: 100%;
+        /* 좌우 여백 완전 차단 */
+        left: 0 !important;
+        right: 0 !important;
+        box-sizing: border-box;
     }
     
     /* 모든 섹션 가로 스크롤 방지 및 너비 고정 */
