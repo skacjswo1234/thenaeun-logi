@@ -258,8 +258,10 @@ body.menu-open .menu-toggle span:nth-child(3) {
     transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
     overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 .mobile-menu.active {
@@ -1158,8 +1160,16 @@ body.menu-open .menu-toggle span:nth-child(3) {
     opacity: 0.95;
 }
 
-/* 모바일에서 히어로 섹션 애니메이션 제거 */
+/* 모바일 반응형 디자인 */
 @media (max-width: 768px) {
+    /* 기본 레이아웃 */
+    html, body {
+        width: 100%;
+        overflow-x: hidden;
+        position: relative;
+    }
+    
+    /* 히어로 섹션 애니메이션 제거 */
     .hero-sub-copy {
         animation: none !important;
         opacity: 1 !important;
@@ -1169,7 +1179,56 @@ body.menu-open .menu-toggle span:nth-child(3) {
     .hero-strong-message {
         animation: none !important;
     }
-}
+    
+    /* 네비게이션 */
+    .nav {
+        display: none;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+    
+    /* 모바일 메뉴 */
+    .mobile-menu {
+        width: 240px;
+        max-width: 85%;
+        overflow-x: hidden;
+    }
+    
+    /* 히어로 섹션 */
+    .hero-bg {
+        object-fit: cover;
+    }
+    
+    .hero {
+        overflow: hidden;
+    }
+    
+    .header {
+        width: 100%;
+        left: 0;
+        right: 0;
+    }
+    
+    /* 모든 섹션 가로 스크롤 방지 */
+    section,
+    .hero,
+    .services-section,
+    .image-section,
+    .contact-section,
+    .youtube-promo-section {
+        width: 100%;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+    
+    .container {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
 
 .hero-strong-message {
     font-size: 2.5rem;
@@ -1249,127 +1308,6 @@ body.menu-open .menu-toggle span:nth-child(3) {
     }
 }
 
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-    /* 모바일 스크롤 최적화 - 강화 버전 */
-    html {
-        overscroll-behavior-y: none;
-        overscroll-behavior-x: none;
-        -webkit-overflow-scrolling: touch;
-        width: 100% !important;
-        max-width: 100vw !important;
-        min-width: 100% !important;
-        overflow-x: hidden !important;
-        position: relative;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
-    
-    body {
-        overscroll-behavior-y: none;
-        overscroll-behavior-x: none;
-        -webkit-overflow-scrolling: touch;
-        touch-action: pan-y pinch-zoom;
-        width: 100% !important;
-        max-width: 100vw !important;
-        min-width: 100% !important;
-        overflow-x: hidden !important;
-        position: relative;
-        /* 뷰포트 크기 고정 - 스크롤 방향과 무관하게 동일하게 유지 */
-        min-height: 100vh;
-        margin: 0 !important;
-        padding: 0;
-        /* 뷰포트 크기 변화 방지 */
-        overflow-y: auto;
-        -webkit-text-size-adjust: 100%;
-        /* 좌우 여백 완전 차단 */
-        left: 0 !important;
-        right: 0 !important;
-        box-sizing: border-box;
-    }
-    
-    /* 모든 섹션 가로 스크롤 방지 및 너비 고정 */
-    section,
-    .hero,
-    .services-section,
-    .image-section,
-    .contact-section,
-    .youtube-promo-section {
-        width: 100%;
-        max-width: 100vw;
-        min-width: 100%;
-        overflow-x: hidden;
-        /* 뷰포트 크기 변화 방지 */
-        box-sizing: border-box;
-        margin-left: 0;
-        margin-right: 0;
-    }
-    
-    /* 모든 컨테이너 가로 스크롤 방지 */
-    .container {
-        width: 100%;
-        max-width: 100vw;
-        min-width: 100%;
-        overflow-x: hidden;
-        padding-left: 20px;
-        padding-right: 20px;
-        box-sizing: border-box;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    /* 헤더 너비 고정 */
-    .header {
-        width: 100%;
-        max-width: 100vw;
-        min-width: 100%;
-        left: 0;
-        right: 0;
-        box-sizing: border-box;
-    }
-    
-    /* 히어로 배경 비디오 너비 고정 */
-    .hero-bg {
-        width: 100%;
-        max-width: 100vw;
-        min-width: 100%;
-        left: 0;
-        right: 0;
-        box-sizing: border-box;
-    }
-    
-    .nav {
-        display: none;
-    }
-
-    .menu-toggle {
-        display: flex;
-    }
-
-    .hero-bg {
-        object-fit: cover;
-        /* 모바일 스크롤 성능 최적화 */
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-    }
-    
-    .hero {
-        overflow: hidden;
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    .header {
-        /* 모바일 헤더 스크롤 최적화 */
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-    }
 
     .logo img {
         height: 35px;
