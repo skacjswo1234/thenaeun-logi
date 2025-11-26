@@ -515,35 +515,96 @@ function initHeroVideoSequence() {
     
     if (!heroBg1 || !heroBg1Source) return;
     
+    // 네트워크 속도 감지
+    function getNetworkSpeed() {
+        // Network Information API 사용 (지원되는 경우)
+        if ('connection' in navigator) {
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (connection) {
+                // effectiveType: 'slow-2g', '2g', '3g', '4g'
+                const effectiveType = connection.effectiveType;
+                const downlink = connection.downlink; // Mbps
+                
+                if (effectiveType === 'slow-2g' || effectiveType === '2g' || downlink < 1) {
+                    return 'slow';
+                } else if (effectiveType === '3g' || downlink < 2) {
+                    return 'medium';
+                }
+                return 'fast';
+            }
+        }
+        // API가 지원되지 않으면 기본값으로 'medium' 반환
+        return 'medium';
+    }
+    
     // 모바일 여부 확인 및 비디오 소스 설정
     function setHeroVideoSource() {
         const isMobile = window.innerWidth <= 768;
+        const networkSpeed = getNetworkSpeed();
         
-        // 모바일에서는 preload를 metadata로 설정하여 초기 로딩 최소화
         if (isMobile) {
-            heroBg1.preload = 'metadata';
+            // 모바일에서는 네트워크 속도에 따라 다른 전략 사용
+            if (networkSpeed === 'slow') {
+                // 느린 네트워크: preload를 none으로 설정하여 사용자가 스크롤하거나 상호작용할 때만 로드
+                heroBg1.preload = 'none';
+            } else {
+                // 보통/빠른 네트워크: metadata만 먼저 로드
+                heroBg1.preload = 'metadata';
+            }
             heroBg1Source.src = 'images/h-1-m.mp4';
         } else {
             heroBg1.preload = 'auto';
             heroBg1Source.src = 'images/h-1.mp4';
         }
         
-        // 소스 변경 후 비디오 다시 로드
-        heroBg1.load();
+        // 소스 변경 후 비디오 다시 로드 (preload가 'none'이 아닌 경우에만)
+        if (heroBg1.preload !== 'none') {
+            heroBg1.load();
+        }
     }
     
     // 초기 설정
     setHeroVideoSource();
     
-    // 모바일에서 비디오가 재생 가능해질 때까지 대기
+    // 모바일에서 비디오 로딩 및 재생 처리
     const isMobile = window.innerWidth <= 768;
+    const networkSpeed = getNetworkSpeed();
+    
     if (isMobile) {
-        // canplay 이벤트로 재생 가능할 때 재생 시작 (더 빠른 시작)
-        heroBg1.addEventListener('canplay', () => {
-            heroBg1.play().catch(e => {
-                console.log('비디오 자동 재생 차단됨:', e);
-            });
-        }, { once: true });
+        if (networkSpeed === 'slow') {
+            // 느린 네트워크: 페이지 로드 후 약간의 지연을 두고 로드 시작
+            // 또는 사용자 상호작용(스크롤 등)이 있을 때 로드
+            const loadVideo = () => {
+                heroBg1.preload = 'metadata';
+                heroBg1.load();
+                
+                heroBg1.addEventListener('canplay', () => {
+                    heroBg1.play().catch(e => {
+                        console.log('비디오 자동 재생 차단됨:', e);
+                    });
+                }, { once: true });
+            };
+            
+            // 1초 후 또는 첫 스크롤 시 로드
+            let loaded = false;
+            const tryLoad = () => {
+                if (!loaded) {
+                    loaded = true;
+                    loadVideo();
+                }
+            };
+            
+            setTimeout(tryLoad, 1000);
+            window.addEventListener('scroll', tryLoad, { once: true, passive: true });
+            window.addEventListener('touchstart', tryLoad, { once: true, passive: true });
+        } else {
+            // 보통/빠른 네트워크: 기존 방식 유지
+            heroBg1.addEventListener('canplay', () => {
+                heroBg1.play().catch(e => {
+                    console.log('비디오 자동 재생 차단됨:', e);
+                });
+            }, { once: true });
+        }
     }
     
     // 리사이즈 이벤트 리스너
@@ -553,7 +614,7 @@ function initHeroVideoSequence() {
         resizeTimer = setTimeout(() => {
             const wasPlaying = !heroBg1.paused;
             setHeroVideoSource();
-            if (wasPlaying) {
+            if (wasPlaying && heroBg1.preload !== 'none') {
                 heroBg1.play();
             }
         }, 100);
