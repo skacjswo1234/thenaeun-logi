@@ -862,4 +862,84 @@ window.addEventListener('DOMContentLoaded', () => {
     initYoutubePromoVideo();
     initContactForm();
     initContactVideoLazyLoad();
+    initMobileViewportFix();
 });
+
+// ============================================
+// 모바일 뷰포트 고정 및 가로 스크롤 방지
+// ============================================
+function initMobileViewportFix() {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (!isMobile) return;
+    
+    // 가로 스크롤 완전 차단
+    function preventHorizontalScroll() {
+        document.documentElement.style.overflowX = 'hidden';
+        document.body.style.overflowX = 'hidden';
+        document.documentElement.style.maxWidth = '100vw';
+        document.body.style.maxWidth = '100vw';
+        
+        // 모든 섹션에 가로 스크롤 방지
+        const allSections = document.querySelectorAll('section, .container, .hero, .services-section, .image-section, .contact-section, .youtube-promo-section');
+        allSections.forEach(el => {
+            el.style.overflowX = 'hidden';
+            el.style.maxWidth = '100vw';
+        });
+    }
+    
+    // 뷰포트 높이 고정 (iOS Safari 주소창 변화 방지)
+    function fixViewportHeight() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    
+    // 초기 설정
+    preventHorizontalScroll();
+    fixViewportHeight();
+    
+    // 스크롤 시 가로 스크롤 방지
+    let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    
+    window.addEventListener('scroll', () => {
+        const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        // 가로 스크롤 방지
+        if (window.scrollX !== 0) {
+            window.scrollTo(0, currentScrollTop);
+        }
+        
+        lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+    }, { passive: true });
+    
+    // 리사이즈 시 뷰포트 높이 재계산
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            fixViewportHeight();
+            preventHorizontalScroll();
+        }, 100);
+    });
+    
+    // 터치 이벤트에서 가로 스크롤 방지
+    let touchStartX = 0;
+    let touchStartY = 0;
+    
+    document.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    
+    document.addEventListener('touchmove', (e) => {
+        const touchX = e.touches[0].clientX;
+        const touchY = e.touches[0].clientY;
+        const diffX = Math.abs(touchX - touchStartX);
+        const diffY = Math.abs(touchY - touchStartY);
+        
+        // 가로 스크롤이 세로 스크롤보다 클 때 가로 스크롤 방지
+        if (diffX > diffY && diffX > 10) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+}
