@@ -13,37 +13,43 @@ let currentSearch = '';
 let currentContactId = null;
 let contactsData = [];
 
-// DOM 요소
-const loadingEl = document.getElementById('loading');
-const contactsListEl = document.getElementById('contactsList');
-const paginationEl = document.getElementById('pagination');
-const statusFilterEl = document.getElementById('statusFilter');
-const searchInputEl = document.getElementById('searchInput');
-const refreshBtn = document.getElementById('refreshBtn');
-const contactModal = document.getElementById('contactModal');
-const closeModalBtn = document.getElementById('closeModal');
-const closeModalBtn2 = document.getElementById('closeModalBtn');
-const modalBodyEl = document.getElementById('modalBody');
-const markAsReadBtn = document.getElementById('markAsReadBtn');
-const markAsRepliedBtn = document.getElementById('markAsRepliedBtn');
-const deleteContactBtn = document.getElementById('deleteContactBtn');
-const toastEl = document.getElementById('toast');
-const logoutBtn = document.getElementById('logoutBtn');
-const changePasswordBtn = document.getElementById('changePasswordBtn');
-const passwordModal = document.getElementById('passwordModal');
-const menuToggleBtn = document.getElementById('menuToggleBtn');
-const sideMenu = document.getElementById('sideMenu');
-const sideMenuOverlay = document.getElementById('sideMenuOverlay');
-const sideMenuClose = document.getElementById('sideMenuClose');
-const sideMenuRefresh = document.getElementById('sideMenuRefresh');
-const sideMenuChangePassword = document.getElementById('sideMenuChangePassword');
-const sideMenuLogout = document.getElementById('sideMenuLogout');
-const closePasswordModal = document.getElementById('closePasswordModal');
-const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
-const submitPasswordBtn = document.getElementById('submitPasswordBtn');
-const changePasswordForm = document.getElementById('changePasswordForm');
-const passwordError = document.getElementById('passwordError');
-const currentUsername = document.getElementById('currentUsername');
+// DOM 요소 (안전하게 가져오기)
+function getElement(id) {
+    const el = document.getElementById(id);
+    if (!el) {
+        console.warn(`Element with id "${id}" not found`);
+    }
+    return el;
+}
+
+const loadingEl = getElement('loading');
+const contactsListEl = getElement('contactsList');
+const paginationEl = getElement('pagination');
+const statusFilterEl = getElement('statusFilter');
+const searchInputEl = getElement('searchInput');
+const contactModal = getElement('contactModal');
+const closeModalBtn = getElement('closeModal');
+const closeModalBtn2 = getElement('closeModalBtn');
+const modalBodyEl = getElement('modalBody');
+const markAsReadBtn = getElement('markAsReadBtn');
+const markAsRepliedBtn = getElement('markAsRepliedBtn');
+const deleteContactBtn = getElement('deleteContactBtn');
+const toastEl = getElement('toast');
+const passwordModal = getElement('passwordModal');
+const menuToggleBtn = getElement('menuToggleBtn');
+const sideMenu = getElement('sideMenu');
+const sideMenuOverlay = getElement('sideMenuOverlay');
+const sideMenuClose = getElement('sideMenuClose');
+const sideMenuRefresh = getElement('sideMenuRefresh');
+const sideMenuChangePassword = getElement('sideMenuChangePassword');
+const sideMenuLogout = getElement('sideMenuLogout');
+const closePasswordModal = getElement('closePasswordModal');
+const cancelPasswordBtn = getElement('cancelPasswordBtn');
+const submitPasswordBtn = getElement('submitPasswordBtn');
+const changePasswordForm = getElement('changePasswordForm');
+const passwordError = getElement('passwordError');
+const currentUsername = getElement('currentUsername');
+const settingsChangePassword = getElement('settingsChangePassword');
 
 // 통계 요소
 const totalCountEl = document.getElementById('totalCount');
@@ -392,47 +398,111 @@ function getStatusText(status) {
     return statusMap[status] || status;
 }
 
-// 이벤트 리스너
-refreshBtn.addEventListener('click', () => {
-    fetchContacts(currentPage, currentStatus, currentSearch);
-});
-
-statusFilterEl.addEventListener('change', (e) => {
-    currentStatus = e.target.value;
-    currentPage = 1;
-    fetchContacts(currentPage, currentStatus, currentSearch);
-});
-
-let searchTimeout;
-searchInputEl.addEventListener('input', (e) => {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        currentSearch = e.target.value;
+// 이벤트 리스너 (안전하게 등록)
+if (statusFilterEl) {
+    statusFilterEl.addEventListener('change', (e) => {
+        currentStatus = e.target.value;
         currentPage = 1;
         fetchContacts(currentPage, currentStatus, currentSearch);
-    }, 500);
-});
+    });
+}
 
-closeModalBtn.addEventListener('click', closeContactModal);
-closeModalBtn2.addEventListener('click', closeContactModal);
+let searchTimeout;
+if (searchInputEl) {
+    searchInputEl.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            currentSearch = e.target.value;
+            currentPage = 1;
+            fetchContacts(currentPage, currentStatus, currentSearch);
+        }, 500);
+    });
+}
 
-contactModal.addEventListener('click', (e) => {
-    if (e.target === contactModal) {
-        closeContactModal();
+if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', closeContactModal);
+}
+if (closeModalBtn2) {
+    closeModalBtn2.addEventListener('click', closeContactModal);
+}
+
+if (contactModal) {
+    contactModal.addEventListener('click', (e) => {
+        if (e.target === contactModal) {
+            closeContactModal();
+        }
+    });
+}
+
+if (markAsReadBtn) {
+    markAsReadBtn.addEventListener('click', () => {
+        updateContactStatus('read');
+    });
+}
+
+if (markAsRepliedBtn) {
+    markAsRepliedBtn.addEventListener('click', () => {
+        updateContactStatus('replied');
+    });
+}
+
+if (deleteContactBtn) {
+    deleteContactBtn.addEventListener('click', deleteContact);
+}
+
+// 페이지 전환
+function switchPage(pageId) {
+    // 모든 페이지 숨기기
+    document.querySelectorAll('.page-content').forEach(page => {
+        page.classList.remove('active');
+    });
+    
+    // 선택한 페이지 표시
+    const targetPage = document.getElementById(`page-${pageId}`);
+    if (targetPage) {
+        targetPage.classList.add('active');
     }
-});
+    
+    // 네비게이션 활성화
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.querySelectorAll(`[data-page="${pageId}"]`).forEach(item => {
+        item.classList.add('active');
+    });
+    
+    // 페이지 제목 업데이트
+    const pageTitles = {
+        'contacts': '문의 관리',
+        'stats': '통계',
+        'settings': '설정'
+    };
+    const pageTitleEl = document.getElementById('pageTitle');
+    if (pageTitleEl) {
+        pageTitleEl.textContent = pageTitles[pageId] || '관리자';
+    }
+    
+    // 모바일 메뉴 닫기
+    closeSideMenu();
+    closeMobileSidebar();
+}
 
-markAsReadBtn.addEventListener('click', () => {
-    updateContactStatus('read');
-});
+// 모바일 사이드바 열기/닫기
+function openMobileSidebar() {
+    const sidebar = document.getElementById('adminSidebar');
+    if (sidebar) {
+        sidebar.classList.add('active');
+    }
+}
 
-markAsRepliedBtn.addEventListener('click', () => {
-    updateContactStatus('replied');
-});
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('adminSidebar');
+    if (sidebar) {
+        sidebar.classList.remove('active');
+    }
+}
 
-deleteContactBtn.addEventListener('click', deleteContact);
-
-// 사이드 메뉴 열기/닫기
+// 사이드 메뉴 열기/닫기 (모바일 슬라이드 메뉴)
 function openSideMenu() {
     sideMenu.classList.add('active');
     sideMenuOverlay.classList.add('active');
@@ -445,67 +515,128 @@ function closeSideMenu() {
     document.body.style.overflow = '';
 }
 
-menuToggleBtn.addEventListener('click', openSideMenu);
-sideMenuClose.addEventListener('click', closeSideMenu);
-sideMenuOverlay.addEventListener('click', closeSideMenu);
+// 데스크탑/모바일 구분
+function initMenuToggle() {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (menuToggleBtn) {
+        if (isMobile) {
+            menuToggleBtn.addEventListener('click', openSideMenu);
+        } else {
+            menuToggleBtn.addEventListener('click', openMobileSidebar);
+        }
+    }
+}
 
-// 사이드 메뉴 항목 클릭
-sideMenuRefresh.addEventListener('click', () => {
-    fetchContacts(currentPage, currentStatus, currentSearch);
-    closeSideMenu();
-});
+if (sideMenuClose) {
+    sideMenuClose.addEventListener('click', closeSideMenu);
+}
+if (sideMenuOverlay) {
+    sideMenuOverlay.addEventListener('click', closeSideMenu);
+}
 
-sideMenuChangePassword.addEventListener('click', () => {
-    const username = localStorage.getItem('adminUsername') || 'admin';
-    currentUsername.value = username;
-    passwordError.classList.remove('show');
-    changePasswordForm.reset();
-    passwordModal.classList.add('active');
-    closeSideMenu();
-});
+// 네비게이션 클릭 이벤트 (DOMContentLoaded 후 실행)
+function initNavigation() {
+    document.querySelectorAll('.nav-item[data-page]').forEach(item => {
+        item.addEventListener('click', () => {
+            const pageId = item.dataset.page;
+            switchPage(pageId);
+        });
+    });
 
-sideMenuLogout.addEventListener('click', () => {
-    closeSideMenu();
+    // 모바일 사이드 메뉴 클릭 이벤트
+    document.querySelectorAll('.side-menu-item[data-page]').forEach(item => {
+        item.addEventListener('click', () => {
+            const pageId = item.dataset.page;
+            switchPage(pageId);
+        });
+    });
+}
+
+// 사이드 메뉴 항목 클릭 (모바일)
+if (sideMenuRefresh) {
+    sideMenuRefresh.addEventListener('click', () => {
+        fetchContacts(currentPage, currentStatus, currentSearch);
+        closeSideMenu();
+    });
+}
+
+if (sideMenuChangePassword) {
+    sideMenuChangePassword.addEventListener('click', () => {
+        switchPage('settings');
+    });
+}
+
+// 로그아웃 함수
+function handleLogout() {
     if (confirm('로그아웃 하시겠습니까?')) {
         localStorage.removeItem('adminLoggedIn');
         localStorage.removeItem('adminUsername');
         window.location.href = 'login.html';
     }
-});
+}
 
-// 로그아웃
-if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-        if (confirm('로그아웃 하시겠습니까?')) {
-            localStorage.removeItem('adminLoggedIn');
-            localStorage.removeItem('adminUsername');
-            window.location.href = 'login.html';
-        }
+if (sideMenuLogout) {
+    sideMenuLogout.addEventListener('click', () => {
+        closeSideMenu();
+        handleLogout();
     });
+}
+
+if (sidebarLogout) {
+    sidebarLogout.addEventListener('click', handleLogout);
+}
+
+// 로그아웃 함수
+function handleLogout() {
+    if (confirm('로그아웃 하시겠습니까?')) {
+        localStorage.removeItem('adminLoggedIn');
+        localStorage.removeItem('adminUsername');
+        window.location.href = 'login.html';
+    }
+}
+
+if (sideMenuLogout) {
+    sideMenuLogout.addEventListener('click', () => {
+        closeSideMenu();
+        handleLogout();
+    });
+}
+
+if (sidebarLogout) {
+    sidebarLogout.addEventListener('click', handleLogout);
 }
 
 // 비밀번호 변경 모달 열기
 function openPasswordModal() {
+    if (!passwordModal || !currentUsername || !changePasswordForm) return;
+    
     const username = localStorage.getItem('adminUsername') || 'admin';
     currentUsername.value = username;
-    passwordError.classList.remove('show');
+    if (passwordError) passwordError.classList.remove('show');
     changePasswordForm.reset();
     passwordModal.classList.add('active');
 }
 
-if (changePasswordBtn) {
-    changePasswordBtn.addEventListener('click', openPasswordModal);
+if (settingsChangePassword) {
+    settingsChangePassword.addEventListener('click', openPasswordModal);
 }
 
 // 비밀번호 변경 모달 닫기
-closePasswordModal.addEventListener('click', closePasswordModalFunc);
-cancelPasswordBtn.addEventListener('click', closePasswordModalFunc);
+if (closePasswordModal) {
+    closePasswordModal.addEventListener('click', closePasswordModalFunc);
+}
+if (cancelPasswordBtn) {
+    cancelPasswordBtn.addEventListener('click', closePasswordModalFunc);
+}
 
-passwordModal.addEventListener('click', (e) => {
-    if (e.target === passwordModal) {
-        closePasswordModalFunc();
-    }
-});
+if (passwordModal) {
+    passwordModal.addEventListener('click', (e) => {
+        if (e.target === passwordModal) {
+            closePasswordModalFunc();
+        }
+    });
+}
 
 function closePasswordModalFunc() {
     passwordModal.classList.remove('active');
@@ -514,52 +645,64 @@ function closePasswordModalFunc() {
 }
 
 // 비밀번호 변경 폼 제출
-changePasswordForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const username = currentUsername.value;
-    const oldPassword = document.getElementById('oldPassword').value;
-    const newPassword = document.getElementById('newPassword').value;
-    const confirmPassword = document.getElementById('confirmPassword').value;
+if (changePasswordForm) {
+    changePasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        if (!currentUsername || !passwordError || !submitPasswordBtn) return;
+        
+        const username = currentUsername.value;
+        const oldPassword = document.getElementById('oldPassword')?.value;
+        const newPassword = document.getElementById('newPassword')?.value;
+        const confirmPassword = document.getElementById('confirmPassword')?.value;
 
-    passwordError.classList.remove('show');
+        if (passwordError) passwordError.classList.remove('show');
 
-    // 비밀번호 확인 검증
-    if (newPassword !== confirmPassword) {
-        passwordError.textContent = '새 비밀번호가 일치하지 않습니다.';
-        passwordError.classList.add('show');
-        return;
-    }
+        // 비밀번호 확인 검증
+        if (newPassword !== confirmPassword) {
+            if (passwordError) {
+                passwordError.textContent = '새 비밀번호가 일치하지 않습니다.';
+                passwordError.classList.add('show');
+            }
+            return;
+        }
 
-    if (newPassword.length < 4) {
-        passwordError.textContent = '새 비밀번호는 최소 4자 이상이어야 합니다.';
-        passwordError.classList.add('show');
-        return;
-    }
+        if (newPassword.length < 4) {
+            if (passwordError) {
+                passwordError.textContent = '새 비밀번호는 최소 4자 이상이어야 합니다.';
+                passwordError.classList.add('show');
+            }
+            return;
+        }
 
-    submitPasswordBtn.disabled = true;
-    submitPasswordBtn.textContent = '변경 중...';
+        submitPasswordBtn.disabled = true;
+        submitPasswordBtn.textContent = '변경 중...';
 
-    try {
-        const data = await apiRequest('/auth/change-password', {
-            method: 'POST',
-            body: JSON.stringify({
-                username,
-                oldPassword,
-                newPassword,
-            }),
-        });
+        try {
+            const data = await apiRequest('/auth/change-password', {
+                method: 'POST',
+                body: JSON.stringify({
+                    username,
+                    oldPassword,
+                    newPassword,
+                }),
+            });
 
-        showToast('비밀번호가 변경되었습니다.', 'success');
-        closePasswordModalFunc();
-    } catch (error) {
-        passwordError.textContent = error.message || '비밀번호 변경 중 오류가 발생했습니다.';
-        passwordError.classList.add('show');
-    } finally {
-        submitPasswordBtn.disabled = false;
-        submitPasswordBtn.textContent = '변경';
-    }
-});
+            showToast('비밀번호가 변경되었습니다.', 'success');
+            closePasswordModalFunc();
+        } catch (error) {
+            if (passwordError) {
+                passwordError.textContent = error.message || '비밀번호 변경 중 오류가 발생했습니다.';
+                passwordError.classList.add('show');
+            }
+        } finally {
+            if (submitPasswordBtn) {
+                submitPasswordBtn.disabled = false;
+                submitPasswordBtn.textContent = '변경';
+            }
+        }
+    });
+}
 
 // 키보드 이벤트 (ESC로 모달 닫기)
 document.addEventListener('keydown', (e) => {

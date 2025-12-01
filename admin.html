@@ -7,73 +7,128 @@
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <div class="admin-container">
-        <!-- 헤더 -->
-        <header class="admin-header">
-            <div class="header-content">
-                <div class="header-left">
-                    <img src="images/logo_white.png" alt="더나은물류" class="header-logo">
-                    <h1>문의 관리</h1>
+    <div class="admin-wrapper">
+        <!-- 왼쪽 사이드바 (데스크탑) -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <img src="images/logo_white.png" alt="더나은물류" class="sidebar-logo">
+                <h2>관리자</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-page="contacts">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">문의 관리</span>
+                </button>
+                <button class="nav-item" data-page="stats">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">통계</span>
+                </button>
+                <button class="nav-item" data-page="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">설정</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="nav-item nav-item-danger" id="sidebarLogout">
+                    <span class="nav-icon">🚪</span>
+                    <span class="nav-text">로그아웃</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <div class="admin-main">
+            <!-- 헤더 -->
+            <header class="admin-header">
+                <div class="header-content">
+                    <div class="header-left">
+                        <button class="menu-toggle-btn" id="menuToggleBtn" aria-label="메뉴 열기">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
+                        <h1 id="pageTitle">문의 관리</h1>
+                    </div>
+                    <div class="header-actions">
+                        <div class="stats">
+                            <span class="stat-item">
+                                <span class="stat-label">전체:</span>
+                                <span class="stat-value" id="totalCount">0</span>
+                            </span>
+                            <span class="stat-item">
+                                <span class="stat-label">신규:</span>
+                                <span class="stat-value stat-new" id="newCount">0</span>
+                            </span>
+                            <span class="stat-item">
+                                <span class="stat-label">읽음:</span>
+                                <span class="stat-value stat-read" id="readCount">0</span>
+                            </span>
+                            <span class="stat-item">
+                                <span class="stat-label">답변완료:</span>
+                                <span class="stat-value stat-replied" id="repliedCount">0</span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
-                <div class="header-actions">
-                    <button class="menu-toggle-btn" id="menuToggleBtn" aria-label="메뉴 열기">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                    <div class="stats">
-                        <span class="stat-item">
-                            <span class="stat-label">전체:</span>
-                            <span class="stat-value" id="totalCount">0</span>
-                        </span>
-                        <span class="stat-item">
-                            <span class="stat-label">신규:</span>
-                            <span class="stat-value stat-new" id="newCount">0</span>
-                        </span>
-                        <span class="stat-item">
-                            <span class="stat-label">읽음:</span>
-                            <span class="stat-value stat-read" id="readCount">0</span>
-                        </span>
-                        <span class="stat-item">
-                            <span class="stat-label">답변완료:</span>
-                            <span class="stat-value stat-replied" id="repliedCount">0</span>
-                        </span>
+            </header>
+
+            <!-- 페이지 콘텐츠 -->
+            <div class="admin-content">
+                <!-- 문의 관리 페이지 -->
+                <div class="page-content active" id="page-contacts">
+                    <!-- 필터 및 검색 -->
+                    <div class="admin-filters">
+                        <div class="filter-group">
+                            <label for="statusFilter">상태 필터:</label>
+                            <select id="statusFilter" class="filter-select">
+                                <option value="">전체</option>
+                                <option value="new">신규</option>
+                                <option value="read">읽음</option>
+                                <option value="replied">답변완료</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="searchInput">검색:</label>
+                            <input type="text" id="searchInput" class="filter-input" placeholder="이름, 연락처, 내용 검색...">
+                        </div>
+                    </div>
+
+                    <!-- 로딩 표시 -->
+                    <div class="loading" id="loading">
+                        <div class="spinner"></div>
+                        <p>로딩 중...</p>
+                    </div>
+
+                    <!-- 문의 목록 -->
+                    <div class="contacts-list" id="contactsList">
+                        <!-- 문의 항목들이 여기에 동적으로 추가됩니다 -->
+                    </div>
+
+                    <!-- 페이지네이션 -->
+                    <div class="pagination" id="pagination">
+                        <!-- 페이지네이션 버튼들이 여기에 동적으로 추가됩니다 -->
+                    </div>
+                </div>
+
+                <!-- 통계 페이지 -->
+                <div class="page-content" id="page-stats">
+                    <div class="stats-page">
+                        <h2>통계</h2>
+                        <p>통계 페이지는 준비 중입니다.</p>
+                    </div>
+                </div>
+
+                <!-- 설정 페이지 -->
+                <div class="page-content" id="page-settings">
+                    <div class="settings-page">
+                        <h2>설정</h2>
+                        <div class="settings-section">
+                            <h3>비밀번호 변경</h3>
+                            <button class="btn btn-primary" id="settingsChangePassword">비밀번호 변경</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </header>
-
-        <!-- 필터 및 검색 -->
-        <div class="admin-filters">
-            <div class="filter-group">
-                <label for="statusFilter">상태 필터:</label>
-                <select id="statusFilter" class="filter-select">
-                    <option value="">전체</option>
-                    <option value="new">신규</option>
-                    <option value="read">읽음</option>
-                    <option value="replied">답변완료</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="searchInput">검색:</label>
-                <input type="text" id="searchInput" class="filter-input" placeholder="이름, 연락처, 내용 검색...">
-            </div>
-        </div>
-
-        <!-- 로딩 표시 -->
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>로딩 중...</p>
-        </div>
-
-        <!-- 문의 목록 -->
-        <div class="contacts-list" id="contactsList">
-            <!-- 문의 항목들이 여기에 동적으로 추가됩니다 -->
-        </div>
-
-        <!-- 페이지네이션 -->
-        <div class="pagination" id="pagination">
-            <!-- 페이지네이션 버튼들이 여기에 동적으로 추가됩니다 -->
         </div>
 
         <!-- 문의 상세 모달 -->
@@ -98,7 +153,7 @@
         <!-- 알림 메시지 -->
         <div class="toast" id="toast"></div>
 
-        <!-- 사이드 메뉴 -->
+        <!-- 모바일 사이드 메뉴 -->
         <div class="side-menu-overlay" id="sideMenuOverlay"></div>
         <div class="side-menu" id="sideMenu">
             <div class="side-menu-header">
@@ -106,13 +161,17 @@
                 <button class="side-menu-close" id="sideMenuClose">&times;</button>
             </div>
             <div class="side-menu-content">
-                <button class="side-menu-item" id="sideMenuRefresh">
-                    <span>🔄</span>
-                    <span>새로고침</span>
+                <button class="side-menu-item" data-page="contacts">
+                    <span>📋</span>
+                    <span>문의 관리</span>
                 </button>
-                <button class="side-menu-item" id="sideMenuChangePassword">
-                    <span>🔑</span>
-                    <span>비밀번호 변경</span>
+                <button class="side-menu-item" data-page="stats">
+                    <span>📊</span>
+                    <span>통계</span>
+                </button>
+                <button class="side-menu-item" data-page="settings">
+                    <span>⚙️</span>
+                    <span>설정</span>
                 </button>
                 <button class="side-menu-item side-menu-item-danger" id="sideMenuLogout">
                     <span>🚪</span>
@@ -166,4 +225,3 @@
     <script src="admin.js"></script>
 </body>
 </html>
-
