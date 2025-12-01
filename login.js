@@ -14,7 +14,6 @@ if (localStorage.getItem('adminLoggedIn') === 'true') {
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
 
     // 에러 메시지 숨기기
@@ -25,13 +24,13 @@ loginForm.addEventListener('submit', async (e) => {
     loginBtn.textContent = '로그인 중...';
 
     try {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password }),
-        });
+            const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ password }),
+            });
 
         const data = await response.json();
 

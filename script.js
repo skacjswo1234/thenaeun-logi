@@ -786,14 +786,14 @@ function initContactForm() {
             const result = await response.json();
             
             if (response.ok) {
-                alert('문의가 접수되었습니다. 빠른 시일 내에 연락드리겠습니다.');
+                showSuccessModal();
                 contactForm.reset();
             } else {
                 throw new Error(result.error || '전송 실패');
             }
         } catch (error) {
             console.error('문의 제출 오류:', error);
-            alert(`문의 전송 중 오류가 발생했습니다: ${error.message}\n\nAPI 서버가 설정되지 않았을 수 있습니다.`);
+            showErrorModal(error.message || '문의 전송 중 오류가 발생했습니다.');
         } finally {
             // 버튼 복원
             submitBtn.disabled = false;
@@ -917,6 +917,74 @@ function initContactVideoLazyLoad() {
         }
     });
 }
+
+// ============================================
+// 문의 성공/오류 모달
+// ============================================
+function showSuccessModal() {
+    const modal = document.getElementById('successModal');
+    if (modal) {
+        modal.classList.add('active');
+        // 3초 후 자동으로 닫기
+        setTimeout(() => {
+            closeSuccessModal();
+        }, 3000);
+    }
+}
+
+function closeSuccessModal() {
+    const modal = document.getElementById('successModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+function showErrorModal(message) {
+    const modal = document.getElementById('errorModal');
+    const messageEl = document.getElementById('errorModalMessage');
+    if (modal) {
+        if (messageEl) {
+            messageEl.textContent = message;
+        }
+        modal.classList.add('active');
+    }
+}
+
+function closeErrorModal() {
+    const modal = document.getElementById('errorModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+// 모달 닫기 이벤트
+document.addEventListener('DOMContentLoaded', () => {
+    const closeSuccessBtn = document.getElementById('closeSuccessModal');
+    const closeErrorBtn = document.getElementById('closeErrorModal');
+    const successModal = document.getElementById('successModal');
+    const errorModal = document.getElementById('errorModal');
+
+    if (closeSuccessBtn) {
+        closeSuccessBtn.addEventListener('click', closeSuccessModal);
+    }
+    if (closeErrorBtn) {
+        closeErrorBtn.addEventListener('click', closeErrorModal);
+    }
+    if (successModal) {
+        successModal.addEventListener('click', (e) => {
+            if (e.target === successModal) {
+                closeSuccessModal();
+            }
+        });
+    }
+    if (errorModal) {
+        errorModal.addEventListener('click', (e) => {
+            if (e.target === errorModal) {
+                closeErrorModal();
+            }
+        });
+    }
+});
 
 // ============================================
 // 페이지 로드 시 초기화

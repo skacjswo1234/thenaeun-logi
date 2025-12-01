@@ -16,9 +16,11 @@
                     <h1>문의 관리</h1>
                 </div>
                 <div class="header-actions">
-                    <button class="btn btn-secondary" id="changePasswordBtn">비밀번호 변경</button>
-                    <button class="btn btn-refresh" id="refreshBtn">새로고침</button>
-                    <button class="btn btn-logout" id="logoutBtn">로그아웃</button>
+                    <button class="menu-toggle-btn" id="menuToggleBtn" aria-label="메뉴 열기">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                     <div class="stats">
                         <span class="stat-item">
                             <span class="stat-label">전체:</span>
@@ -95,6 +97,29 @@
 
         <!-- 알림 메시지 -->
         <div class="toast" id="toast"></div>
+
+        <!-- 사이드 메뉴 -->
+        <div class="side-menu-overlay" id="sideMenuOverlay"></div>
+        <div class="side-menu" id="sideMenu">
+            <div class="side-menu-header">
+                <h2>메뉴</h2>
+                <button class="side-menu-close" id="sideMenuClose">&times;</button>
+            </div>
+            <div class="side-menu-content">
+                <button class="side-menu-item" id="sideMenuRefresh">
+                    <span>🔄</span>
+                    <span>새로고침</span>
+                </button>
+                <button class="side-menu-item" id="sideMenuChangePassword">
+                    <span>🔑</span>
+                    <span>비밀번호 변경</span>
+                </button>
+                <button class="side-menu-item side-menu-item-danger" id="sideMenuLogout">
+                    <span>🚪</span>
+                    <span>로그아웃</span>
+                </button>
+            </div>
+        </div>
 
         <!-- 비밀번호 변경 모달 -->
         <div class="modal" id="passwordModal">

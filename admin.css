@@ -168,6 +168,147 @@ body {
     background: #7f8c8d;
 }
 
+/* 메뉴 토글 버튼 */
+.menu-toggle-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+}
+
+.menu-toggle-btn span {
+    width: 100%;
+    height: 3px;
+    background: #2c3e50;
+    border-radius: 3px;
+    transition: all 0.3s;
+    transform-origin: center;
+}
+
+.menu-toggle-btn:hover span {
+    background: #3498db;
+}
+
+/* 사이드 메뉴 */
+.side-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+}
+
+.side-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.side-menu {
+    position: fixed;
+    top: 0;
+    right: -350px;
+    width: 350px;
+    max-width: 85vw;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    transition: right 0.3s ease-out;
+    overflow-y: auto;
+}
+
+.side-menu.active {
+    right: 0;
+}
+
+.side-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    background: #f8f9fa;
+}
+
+.side-menu-header h2 {
+    font-size: 20px;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.side-menu-close {
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: #999;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s;
+}
+
+.side-menu-close:hover {
+    color: #333;
+}
+
+.side-menu-content {
+    padding: 10px 0;
+}
+
+.side-menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-left: 3px solid transparent;
+}
+
+.side-menu-item:hover {
+    background: #f8f9fa;
+    border-left-color: #3498db;
+    color: #3498db;
+}
+
+.side-menu-item span:first-child {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+.side-menu-item-danger {
+    color: #e74c3c;
+}
+
+.side-menu-item-danger:hover {
+    background: #fee;
+    border-left-color: #e74c3c;
+    color: #e74c3c;
+}
+
 /* 필터 */
 .admin-filters {
     background: white;
@@ -587,13 +728,21 @@ body {
     }
 
     .header-content {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .header-actions {
+        gap: 10px;
     }
 
     .stats {
-        width: 100%;
-        justify-content: space-between;
+        display: none;
+    }
+
+    .menu-toggle-btn {
+        display: flex;
     }
 
     .admin-filters {
@@ -629,6 +778,16 @@ body {
         bottom: 20px;
         right: 20px;
         left: 20px;
+    }
+
+    .side-menu {
+        width: 100%;
+        max-width: 100vw;
+        right: -100%;
+    }
+
+    .side-menu.active {
+        right: 0;
     }
 }
 

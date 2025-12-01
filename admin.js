@@ -31,6 +31,13 @@ const toastEl = document.getElementById('toast');
 const logoutBtn = document.getElementById('logoutBtn');
 const changePasswordBtn = document.getElementById('changePasswordBtn');
 const passwordModal = document.getElementById('passwordModal');
+const menuToggleBtn = document.getElementById('menuToggleBtn');
+const sideMenu = document.getElementById('sideMenu');
+const sideMenuOverlay = document.getElementById('sideMenuOverlay');
+const sideMenuClose = document.getElementById('sideMenuClose');
+const sideMenuRefresh = document.getElementById('sideMenuRefresh');
+const sideMenuChangePassword = document.getElementById('sideMenuChangePassword');
+const sideMenuLogout = document.getElementById('sideMenuLogout');
 const closePasswordModal = document.getElementById('closePasswordModal');
 const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
 const submitPasswordBtn = document.getElementById('submitPasswordBtn');
@@ -425,8 +432,40 @@ markAsRepliedBtn.addEventListener('click', () => {
 
 deleteContactBtn.addEventListener('click', deleteContact);
 
-// 로그아웃
-logoutBtn.addEventListener('click', () => {
+// 사이드 메뉴 열기/닫기
+function openSideMenu() {
+    sideMenu.classList.add('active');
+    sideMenuOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeSideMenu() {
+    sideMenu.classList.remove('active');
+    sideMenuOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+menuToggleBtn.addEventListener('click', openSideMenu);
+sideMenuClose.addEventListener('click', closeSideMenu);
+sideMenuOverlay.addEventListener('click', closeSideMenu);
+
+// 사이드 메뉴 항목 클릭
+sideMenuRefresh.addEventListener('click', () => {
+    fetchContacts(currentPage, currentStatus, currentSearch);
+    closeSideMenu();
+});
+
+sideMenuChangePassword.addEventListener('click', () => {
+    const username = localStorage.getItem('adminUsername') || 'admin';
+    currentUsername.value = username;
+    passwordError.classList.remove('show');
+    changePasswordForm.reset();
+    passwordModal.classList.add('active');
+    closeSideMenu();
+});
+
+sideMenuLogout.addEventListener('click', () => {
+    closeSideMenu();
     if (confirm('로그아웃 하시겠습니까?')) {
         localStorage.removeItem('adminLoggedIn');
         localStorage.removeItem('adminUsername');
@@ -434,14 +473,29 @@ logoutBtn.addEventListener('click', () => {
     }
 });
 
+// 로그아웃
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            localStorage.removeItem('adminLoggedIn');
+            localStorage.removeItem('adminUsername');
+            window.location.href = 'login.html';
+        }
+    });
+}
+
 // 비밀번호 변경 모달 열기
-changePasswordBtn.addEventListener('click', () => {
+function openPasswordModal() {
     const username = localStorage.getItem('adminUsername') || 'admin';
     currentUsername.value = username;
     passwordError.classList.remove('show');
     changePasswordForm.reset();
     passwordModal.classList.add('active');
-});
+}
+
+if (changePasswordBtn) {
+    changePasswordBtn.addEventListener('click', openPasswordModal);
+}
 
 // 비밀번호 변경 모달 닫기
 closePasswordModal.addEventListener('click', closePasswordModalFunc);
