@@ -11,30 +11,29 @@ export async function onRequestGet(context) {
     const limit = parseInt(url.searchParams.get('limit') || '20');
     const offset = (page - 1) * limit;
 
-    // LIMIT와 OFFSET은 숫자로 직접 넣기 (보안상 안전 - 이미 parseInt로 검증됨)
-    let query = 'SELECT * FROM contacts';
-    let countQuery = 'SELECT COUNT(*) as total FROM contacts';
-    const params = [];
-
+    // 데이터 조회 쿼리 구성
+    let query;
+    let countQuery;
+    
     if (status) {
-      query += ' WHERE status = ?';
-      countQuery += ' WHERE status = ?';
-      params.push(status);
+      // status 필터가 있을 때
+      query = `SELECT * FROM contacts WHERE status = ? ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+      countQuery = 'SELECT COUNT(*) as total FROM contacts WHERE status = ?';
+    } else {
+      // status 필터가 없을 때
+      query = `SELECT * FROM contacts ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
+      countQuery = 'SELECT COUNT(*) as total FROM contacts';
     }
-
-    query += ` ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
 
     // 데이터 조회
     const stmt = env['thenaeun-logi-db'].prepare(query);
-    // status가 있을 때만 파라미터 바인딩
-    if (status && params.length > 0) {
+    if (status) {
       stmt.bind(status);
     }
     const contacts = await stmt.all();
 
     // 전체 개수 조회
     const countStmt = env['thenaeun-logi-db'].prepare(countQuery);
-    // status가 있을 때만 파라미터 바인딩
     if (status) {
       countStmt.bind(status);
     }

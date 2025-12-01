@@ -474,7 +474,6 @@ function switchPage(pageId) {
     // 페이지 제목 업데이트
     const pageTitles = {
         'contacts': '문의 관리',
-        'stats': '통계',
         'settings': '설정'
     };
     const pageTitleEl = document.getElementById('pageTitle');
@@ -504,36 +503,59 @@ function closeMobileSidebar() {
 
 // 사이드 메뉴 열기/닫기 (모바일 슬라이드 메뉴)
 function openSideMenu() {
-    sideMenu.classList.add('active');
-    sideMenuOverlay.classList.add('active');
+    const menu = document.getElementById('sideMenu');
+    const overlay = document.getElementById('sideMenuOverlay');
+    if (!menu || !overlay) {
+        console.error('사이드 메뉴 요소를 찾을 수 없습니다.');
+        return;
+    }
+    menu.classList.add('active');
+    overlay.classList.add('active');
     document.body.style.overflow = 'hidden';
 }
 
 function closeSideMenu() {
-    sideMenu.classList.remove('active');
-    sideMenuOverlay.classList.remove('active');
+    const menu = document.getElementById('sideMenu');
+    const overlay = document.getElementById('sideMenuOverlay');
+    if (!menu || !overlay) return;
+    menu.classList.remove('active');
+    overlay.classList.remove('active');
     document.body.style.overflow = '';
 }
 
 // 데스크탑/모바일 구분
 function initMenuToggle() {
+    const btn = document.getElementById('menuToggleBtn');
+    if (!btn) {
+        console.error('메뉴 토글 버튼을 찾을 수 없습니다.');
+        return;
+    }
+    
+    // 기존 이벤트 리스너 제거를 위해 클론 후 교체
+    const newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+    const menuBtn = document.getElementById('menuToggleBtn');
+    
     const isMobile = window.innerWidth <= 768;
     
-    if (menuToggleBtn) {
-        if (isMobile) {
-            menuToggleBtn.addEventListener('click', openSideMenu);
-        } else {
-            menuToggleBtn.addEventListener('click', openMobileSidebar);
-        }
+    if (isMobile) {
+        menuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('모바일 메뉴 열기');
+            openSideMenu();
+        });
+    } else {
+        menuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('데스크탑 사이드바 열기');
+            openMobileSidebar();
+        });
     }
 }
 
-if (sideMenuClose) {
-    sideMenuClose.addEventListener('click', closeSideMenu);
-}
-if (sideMenuOverlay) {
-    sideMenuOverlay.addEventListener('click', closeSideMenu);
-}
+// 사이드 메뉴 닫기 이벤트는 DOMContentLoaded에서 등록
 
 // 네비게이션 클릭 이벤트 (DOMContentLoaded 후 실행)
 function initNavigation() {
@@ -718,6 +740,28 @@ document.addEventListener('keydown', (e) => {
 
 // 초기 로드
 document.addEventListener('DOMContentLoaded', () => {
+    // 메뉴 토글 초기화
+    initMenuToggle();
+    
+    // 네비게이션 초기화
+    initNavigation();
+    
+    // 사이드 메뉴 닫기 이벤트 (DOM 로드 후)
+    const sideMenuCloseEl = document.getElementById('sideMenuClose');
+    const sideMenuOverlayEl = document.getElementById('sideMenuOverlay');
+    if (sideMenuCloseEl) {
+        sideMenuCloseEl.addEventListener('click', closeSideMenu);
+    }
+    if (sideMenuOverlayEl) {
+        sideMenuOverlayEl.addEventListener('click', closeSideMenu);
+    }
+    
+    // 문의 목록 로드
     fetchContacts(currentPage, currentStatus, currentSearch);
+    
+    // 윈도우 리사이즈 이벤트 (모바일/데스크탑 전환 시)
+    window.addEventListener('resize', () => {
+        initMenuToggle();
+    });
 });
 

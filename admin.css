@@ -161,10 +161,19 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
+    flex: 1;
 }
 
 .header-left h1 {
     margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    position: relative;
 }
 
 .header-logo {
@@ -909,14 +918,22 @@ body {
 
     .header-actions {
         gap: 10px;
+        position: relative;
     }
 
     .stats {
         display: none;
     }
 
+    .header-actions {
+        justify-content: flex-end;
+        align-items: center;
+    }
+
     .menu-toggle-btn {
         display: flex !important; /* 모바일에서만 표시 */
+        order: 1;
+        margin-left: 0;
     }
 
     .admin-filters {
