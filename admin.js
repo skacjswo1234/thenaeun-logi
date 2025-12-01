@@ -640,9 +640,7 @@ function openPasswordModal() {
     passwordModal.classList.add('active');
 }
 
-if (settingsChangePassword) {
-    settingsChangePassword.addEventListener('click', openPasswordModal);
-}
+// settingsChangePassword 이벤트는 DOMContentLoaded에서 등록
 
 // 비밀번호 변경 모달 닫기
 if (closePasswordModal) {
@@ -754,6 +752,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (sideMenuOverlayEl) {
         sideMenuOverlayEl.addEventListener('click', closeSideMenu);
+    }
+    
+    // 비밀번호 변경 버튼 이벤트 (설정 페이지)
+    const settingsChangePasswordEl = document.getElementById('settingsChangePassword');
+    if (settingsChangePasswordEl) {
+        settingsChangePasswordEl.addEventListener('click', () => {
+            console.log('비밀번호 변경 버튼 클릭');
+            openPasswordModal();
+        });
     }
     
     // 문의 목록 로드
