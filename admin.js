@@ -631,13 +631,57 @@ if (sidebarLogout) {
 
 // 비밀번호 변경 모달 열기
 function openPasswordModal() {
-    if (!passwordModal || !currentUsername || !changePasswordForm) return;
+    console.log('openPasswordModal 호출됨');
+    
+    // DOM 요소 다시 가져오기 (동적으로 생성된 경우 대비)
+    const modal = document.getElementById('passwordModal');
+    const usernameInput = document.getElementById('currentUsername');
+    const form = document.getElementById('changePasswordForm');
+    const errorEl = document.getElementById('passwordError');
+    
+    console.log('모달 요소 확인:', {
+        modal: !!modal,
+        usernameInput: !!usernameInput,
+        form: !!form,
+        errorEl: !!errorEl
+    });
+    
+    if (!modal) {
+        console.error('passwordModal 요소를 찾을 수 없습니다.');
+        return;
+    }
+    
+    if (!usernameInput) {
+        console.error('currentUsername 요소를 찾을 수 없습니다.');
+        return;
+    }
+    
+    if (!form) {
+        console.error('changePasswordForm 요소를 찾을 수 없습니다.');
+        return;
+    }
     
     const username = localStorage.getItem('adminUsername') || 'admin';
-    currentUsername.value = username;
-    if (passwordError) passwordError.classList.remove('show');
-    changePasswordForm.reset();
-    passwordModal.classList.add('active');
+    usernameInput.value = username;
+    
+    if (errorEl) {
+        errorEl.classList.remove('show');
+        errorEl.textContent = '';
+    }
+    
+    form.reset();
+    
+    // 모달 표시
+    modal.classList.add('active');
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    document.body.style.overflow = 'hidden';
+    
+    console.log('모달 열기 완료', {
+        hasActiveClass: modal.classList.contains('active'),
+        computedDisplay: window.getComputedStyle(modal).display
+    });
 }
 
 // settingsChangePassword 이벤트는 DOMContentLoaded에서 등록
