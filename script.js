@@ -925,10 +925,13 @@ function showSuccessModal() {
     const modal = document.getElementById('successModal');
     if (modal) {
         modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
         // 3초 후 자동으로 닫기
         setTimeout(() => {
             closeSuccessModal();
         }, 3000);
+    } else {
+        console.error('successModal을 찾을 수 없습니다.');
     }
 }
 
@@ -936,6 +939,7 @@ function closeSuccessModal() {
     const modal = document.getElementById('successModal');
     if (modal) {
         modal.classList.remove('active');
+        document.body.style.overflow = '';
     }
 }
 
@@ -947,6 +951,9 @@ function showErrorModal(message) {
             messageEl.textContent = message;
         }
         modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    } else {
+        console.error('errorModal을 찾을 수 없습니다.');
     }
 }
 
@@ -954,11 +961,12 @@ function closeErrorModal() {
     const modal = document.getElementById('errorModal');
     if (modal) {
         modal.classList.remove('active');
+        document.body.style.overflow = '';
     }
 }
 
-// 모달 닫기 이벤트
-document.addEventListener('DOMContentLoaded', () => {
+// 모달 닫기 이벤트 초기화
+function initModals() {
     const closeSuccessBtn = document.getElementById('closeSuccessModal');
     const closeErrorBtn = document.getElementById('closeErrorModal');
     const successModal = document.getElementById('successModal');
@@ -984,7 +992,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-});
+}
 
 // ============================================
 // 페이지 로드 시 초기화
@@ -997,6 +1005,7 @@ window.addEventListener('DOMContentLoaded', () => {
     initMobileImages();
     initHeroVideoSequence();
     initYoutubePromoVideo();
+    initModals(); // 모달 초기화 먼저
     initContactForm();
     initContactVideoLazyLoad();
     initMobileViewportFix();

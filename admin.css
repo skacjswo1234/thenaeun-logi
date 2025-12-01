@@ -59,6 +59,10 @@ body {
     flex-wrap: wrap;
 }
 
+.menu-toggle-btn {
+    display: none; /* 데스크톱에서는 숨김 */
+}
+
 .stats {
     display: flex;
     gap: 20px;
@@ -742,7 +746,7 @@ body {
     }
 
     .menu-toggle-btn {
-        display: flex;
+        display: flex !important; /* 모바일에서만 표시 */
     }
 
     .admin-filters {
