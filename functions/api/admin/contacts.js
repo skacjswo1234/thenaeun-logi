@@ -11,6 +11,7 @@ export async function onRequestGet(context) {
     const limit = parseInt(url.searchParams.get('limit') || '20');
     const offset = (page - 1) * limit;
 
+    // LIMIT와 OFFSET은 숫자로 직접 넣기 (보안상 안전 - 이미 parseInt로 검증됨)
     let query = 'SELECT * FROM contacts';
     let countQuery = 'SELECT COUNT(*) as total FROM contacts';
     const params = [];
@@ -21,8 +22,7 @@ export async function onRequestGet(context) {
       params.push(status);
     }
 
-    query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
-    params.push(limit, offset);
+    query += ` ORDER BY created_at DESC LIMIT ${limit} OFFSET ${offset}`;
 
     // 데이터 조회
     const stmt = env['thenaeun-logi-db'].prepare(query);
@@ -33,12 +33,8 @@ export async function onRequestGet(context) {
 
     // 전체 개수 조회
     const countStmt = env['thenaeun-logi-db'].prepare(countQuery);
-    const countParams = [];
     if (status) {
-      countParams.push(status);
-    }
-    if (countParams.length > 0) {
-      countStmt.bind(...countParams);
+      countStmt.bind(status);
     }
     const countResult = await countStmt.first();
     const total = countResult?.total || 0;
@@ -53,6 +49,8 @@ export async function onRequestGet(context) {
       },
     });
   } catch (error) {
+    console.error('문의 조회 오류:', error);
+    console.error('에러 스택:', error.stack);
     return errorResponse(`문의 조회 실패: ${error.message}`, 500);
   }
 }
