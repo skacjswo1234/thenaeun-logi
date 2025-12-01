@@ -11,9 +11,14 @@
         <!-- 헤더 -->
         <header class="admin-header">
             <div class="header-content">
-                <h1>문의 관리</h1>
+                <div class="header-left">
+                    <img src="images/logo_white.png" alt="더나은물류" class="header-logo">
+                    <h1>문의 관리</h1>
+                </div>
                 <div class="header-actions">
+                    <button class="btn btn-secondary" id="changePasswordBtn">비밀번호 변경</button>
                     <button class="btn btn-refresh" id="refreshBtn">새로고침</button>
+                    <button class="btn btn-logout" id="logoutBtn">로그아웃</button>
                     <div class="stats">
                         <span class="stat-item">
                             <span class="stat-label">전체:</span>
@@ -90,6 +95,41 @@
 
         <!-- 알림 메시지 -->
         <div class="toast" id="toast"></div>
+
+        <!-- 비밀번호 변경 모달 -->
+        <div class="modal" id="passwordModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>비밀번호 변경</h2>
+                    <button class="modal-close" id="closePasswordModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="changePasswordForm">
+                        <div class="form-group">
+                            <label for="currentUsername">사용자명</label>
+                            <input type="text" id="currentUsername" name="username" required readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="oldPassword">현재 비밀번호</label>
+                            <input type="password" id="oldPassword" name="oldPassword" required placeholder="현재 비밀번호를 입력하세요">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">새 비밀번호</label>
+                            <input type="password" id="newPassword" name="newPassword" required placeholder="새 비밀번호를 입력하세요 (최소 4자)" minlength="4">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">새 비밀번호 확인</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="새 비밀번호를 다시 입력하세요" minlength="4">
+                        </div>
+                        <div class="error-message" id="passwordError"></div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelPasswordBtn">취소</button>
+                    <button class="btn btn-primary" id="submitPasswordBtn">변경</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- API 설정 (Cloudflare Pages Functions 사용) -->

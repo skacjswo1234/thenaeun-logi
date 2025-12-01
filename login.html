@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 로그인 - 더나은물류</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="logo-container">
+                <img src="images/logo_white.png" alt="더나은물류" class="logo">
+            </div>
+            <h1 class="login-title">관리자 로그인</h1>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">사용자명</label>
+                    <input type="text" id="username" name="username" required placeholder="사용자명을 입력하세요" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label for="password">비밀번호</label>
+                    <input type="password" id="password" name="password" required placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+                </div>
+                <button type="submit" class="login-btn" id="loginBtn">로그인</button>
+            </form>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+    </div>
+
+    <!-- API 설정 -->
+    <script>
+        window.API_BASE_URL = '/api';
+    </script>
+    <script src="login.js"></script>
+</body>
+</html>
+

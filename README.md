@@ -55,8 +55,14 @@ npx wrangler d1 create thenaeun-logi-db
 ### 3. 마이그레이션 실행
 
 ```bash
+# 문의 테이블 생성
 npx wrangler d1 execute thenaeun-logi-db --file=./migrations/0001_create_contacts_table.sql
+
+# 관리자 테이블 생성 (기본 계정: admin / admin123)
+npx wrangler d1 execute thenaeun-logi-db --file=./migrations/0002_create_admin_table.sql
 ```
+
+**중요**: 배포 후 반드시 기본 비밀번호(`admin123`)를 변경하세요!
 
 ### 4. 배포
 
@@ -91,6 +97,19 @@ npx wrangler d1 create thenaeun-logi-db --local
 npx wrangler d1 execute thenaeun-logi-db --local --file=./migrations/0001_create_contacts_table.sql
 ```
 
+## 로그인
+
+### 기본 관리자 계정
+- **사용자명**: `admin`
+- **비밀번호**: `admin123`
+
+**⚠️ 보안**: 배포 후 반드시 비밀번호를 변경하세요!
+
+### 로그인 화면
+- `login.html` - 관리자 로그인 페이지
+- 로그인 성공 시 `admin.html`로 이동
+- 로그인 상태는 localStorage에 저장
+
 ## API 엔드포인트
 
 ### 문의하기 (일반 사용자)
@@ -101,6 +120,23 @@ npx wrangler d1 execute thenaeun-logi-db --local --file=./migrations/0001_create
     "phone": "010-1234-5678",
     "age": 30,
     "message": "문의 내용"
+  }
+  ```
+
+### 인증 API
+- `POST /api/auth/login` - 관리자 로그인
+  ```json
+  {
+    "username": "admin",
+    "password": "admin123"
+  }
+  ```
+- `POST /api/auth/change-password` - 비밀번호 변경
+  ```json
+  {
+    "username": "admin",
+    "oldPassword": "admin123",
+    "newPassword": "새비밀번호"
   }
   ```
 
@@ -117,6 +153,16 @@ npx wrangler d1 execute thenaeun-logi-db --local --file=./migrations/0001_create
 - `DELETE /api/admin/contacts/:id` - 문의 삭제
 
 ## 데이터베이스 스키마
+
+### admin 테이블
+
+| 컬럼명 | 타입 | 설명 |
+|--------|------|------|
+| id | INTEGER | 기본 키 (자동 증가) |
+| username | TEXT | 사용자명 (기본값: 'admin') |
+| password | TEXT | 비밀번호 (평문 저장) |
+| created_at | TEXT | 생성일시 |
+| updated_at | TEXT | 수정일시 |
 
 ### contacts 테이블
 

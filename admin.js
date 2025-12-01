@@ -1,5 +1,10 @@
 // API 기본 URL
-const API_BASE_URL = window.API_BASE_URL || 'https://your-worker-name.your-subdomain.workers.dev/api';
+const API_BASE_URL = window.API_BASE_URL || '/api';
+
+// 로그인 체크
+if (localStorage.getItem('adminLoggedIn') !== 'true') {
+    window.location.href = 'login.html';
+}
 
 // 전역 상태
 let currentPage = 1;
@@ -23,6 +28,15 @@ const markAsReadBtn = document.getElementById('markAsReadBtn');
 const markAsRepliedBtn = document.getElementById('markAsRepliedBtn');
 const deleteContactBtn = document.getElementById('deleteContactBtn');
 const toastEl = document.getElementById('toast');
+const logoutBtn = document.getElementById('logoutBtn');
+const changePasswordBtn = document.getElementById('changePasswordBtn');
+const passwordModal = document.getElementById('passwordModal');
+const closePasswordModal = document.getElementById('closePasswordModal');
+const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+const submitPasswordBtn = document.getElementById('submitPasswordBtn');
+const changePasswordForm = document.getElementById('changePasswordForm');
+const passwordError = document.getElementById('passwordError');
+const currentUsername = document.getElementById('currentUsername');
 
 // 통계 요소
 const totalCountEl = document.getElementById('totalCount');
@@ -411,10 +425,97 @@ markAsRepliedBtn.addEventListener('click', () => {
 
 deleteContactBtn.addEventListener('click', deleteContact);
 
+// 로그아웃
+logoutBtn.addEventListener('click', () => {
+    if (confirm('로그아웃 하시겠습니까?')) {
+        localStorage.removeItem('adminLoggedIn');
+        localStorage.removeItem('adminUsername');
+        window.location.href = 'login.html';
+    }
+});
+
+// 비밀번호 변경 모달 열기
+changePasswordBtn.addEventListener('click', () => {
+    const username = localStorage.getItem('adminUsername') || 'admin';
+    currentUsername.value = username;
+    passwordError.classList.remove('show');
+    changePasswordForm.reset();
+    passwordModal.classList.add('active');
+});
+
+// 비밀번호 변경 모달 닫기
+closePasswordModal.addEventListener('click', closePasswordModalFunc);
+cancelPasswordBtn.addEventListener('click', closePasswordModalFunc);
+
+passwordModal.addEventListener('click', (e) => {
+    if (e.target === passwordModal) {
+        closePasswordModalFunc();
+    }
+});
+
+function closePasswordModalFunc() {
+    passwordModal.classList.remove('active');
+    passwordError.classList.remove('show');
+    changePasswordForm.reset();
+}
+
+// 비밀번호 변경 폼 제출
+changePasswordForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const username = currentUsername.value;
+    const oldPassword = document.getElementById('oldPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    passwordError.classList.remove('show');
+
+    // 비밀번호 확인 검증
+    if (newPassword !== confirmPassword) {
+        passwordError.textContent = '새 비밀번호가 일치하지 않습니다.';
+        passwordError.classList.add('show');
+        return;
+    }
+
+    if (newPassword.length < 4) {
+        passwordError.textContent = '새 비밀번호는 최소 4자 이상이어야 합니다.';
+        passwordError.classList.add('show');
+        return;
+    }
+
+    submitPasswordBtn.disabled = true;
+    submitPasswordBtn.textContent = '변경 중...';
+
+    try {
+        const data = await apiRequest('/auth/change-password', {
+            method: 'POST',
+            body: JSON.stringify({
+                username,
+                oldPassword,
+                newPassword,
+            }),
+        });
+
+        showToast('비밀번호가 변경되었습니다.', 'success');
+        closePasswordModalFunc();
+    } catch (error) {
+        passwordError.textContent = error.message || '비밀번호 변경 중 오류가 발생했습니다.';
+        passwordError.classList.add('show');
+    } finally {
+        submitPasswordBtn.disabled = false;
+        submitPasswordBtn.textContent = '변경';
+    }
+});
+
 // 키보드 이벤트 (ESC로 모달 닫기)
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && contactModal.classList.contains('active')) {
-        closeContactModal();
+    if (e.key === 'Escape') {
+        if (passwordModal.classList.contains('active')) {
+            closePasswordModalFunc();
+        }
+        if (contactModal.classList.contains('active')) {
+            closeContactModal();
+        }
     }
 });
 

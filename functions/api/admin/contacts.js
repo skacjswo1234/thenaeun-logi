@@ -26,13 +26,15 @@ export async function onRequestGet(context) {
 
     // 데이터 조회
     const stmt = env['thenaeun-logi-db'].prepare(query);
-    if (params.length > 0) {
-      stmt.bind(...params);
+    // status가 있을 때만 파라미터 바인딩
+    if (status && params.length > 0) {
+      stmt.bind(status);
     }
     const contacts = await stmt.all();
 
     // 전체 개수 조회
     const countStmt = env['thenaeun-logi-db'].prepare(countQuery);
+    // status가 있을 때만 파라미터 바인딩
     if (status) {
       countStmt.bind(status);
     }
