@@ -26,17 +26,19 @@ export async function onRequestGet(context) {
 
     // 데이터 조회
     const stmt = env['thenaeun-logi-db'].prepare(query);
-    if (params.length > 2) {
+    if (params.length > 0) {
       stmt.bind(...params);
-    } else {
-      stmt.bind(limit, offset);
     }
     const contacts = await stmt.all();
 
     // 전체 개수 조회
     const countStmt = env['thenaeun-logi-db'].prepare(countQuery);
+    const countParams = [];
     if (status) {
-      countStmt.bind(status);
+      countParams.push(status);
+    }
+    if (countParams.length > 0) {
+      countStmt.bind(...countParams);
     }
     const countResult = await countStmt.first();
     const total = countResult?.total || 0;
