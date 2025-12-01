@@ -671,16 +671,25 @@ function openPasswordModal() {
     
     form.reset();
     
-    // 모달 표시
-    modal.classList.add('active');
+    // 모달 표시 (강제로 스타일 적용)
     modal.style.display = 'flex';
     modal.style.alignItems = 'center';
     modal.style.justifyContent = 'center';
+    modal.style.position = 'fixed';
+    modal.style.zIndex = '10000';
+    modal.style.left = '0';
+    modal.style.top = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    modal.classList.add('active');
     document.body.style.overflow = 'hidden';
     
     console.log('모달 열기 완료', {
         hasActiveClass: modal.classList.contains('active'),
-        computedDisplay: window.getComputedStyle(modal).display
+        computedDisplay: window.getComputedStyle(modal).display,
+        computedZIndex: window.getComputedStyle(modal).zIndex,
+        modalRect: modal.getBoundingClientRect()
     });
 }
 

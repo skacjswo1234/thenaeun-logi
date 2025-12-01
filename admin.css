@@ -675,7 +675,7 @@ body {
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 10000 !important; /* 다른 모든 요소 위에 표시 */
     left: 0;
     top: 0;
     width: 100%;
@@ -685,7 +685,7 @@ body {
 }
 
 .modal.active {
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
 }

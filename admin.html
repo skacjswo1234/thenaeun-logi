@@ -164,38 +164,39 @@
             </div>
         </div>
 
-        <!-- 비밀번호 변경 모달 -->
-        <div class="modal" id="passwordModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>비밀번호 변경</h2>
-                    <button class="modal-close" id="closePasswordModal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <form id="changePasswordForm">
-                        <div class="form-group">
-                            <label for="currentUsername">사용자명</label>
-                            <input type="text" id="currentUsername" name="username" required readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="oldPassword">현재 비밀번호</label>
-                            <input type="password" id="oldPassword" name="oldPassword" required placeholder="현재 비밀번호를 입력하세요">
-                        </div>
-                        <div class="form-group">
-                            <label for="newPassword">새 비밀번호</label>
-                            <input type="password" id="newPassword" name="newPassword" required placeholder="새 비밀번호를 입력하세요 (최소 4자)" minlength="4">
-                        </div>
-                        <div class="form-group">
-                            <label for="confirmPassword">새 비밀번호 확인</label>
-                            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="새 비밀번호를 다시 입력하세요" minlength="4">
-                        </div>
-                        <div class="error-message" id="passwordError"></div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" id="cancelPasswordBtn">취소</button>
-                    <button class="btn btn-primary" id="submitPasswordBtn">변경</button>
-                </div>
+    </div>
+
+    <!-- 비밀번호 변경 모달 (admin-wrapper 밖으로 이동) -->
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>비밀번호 변경</h2>
+                <button class="modal-close" id="closePasswordModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label for="currentUsername">사용자명</label>
+                        <input type="text" id="currentUsername" name="username" required readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="oldPassword">현재 비밀번호</label>
+                        <input type="password" id="oldPassword" name="oldPassword" required placeholder="현재 비밀번호를 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">새 비밀번호</label>
+                        <input type="password" id="newPassword" name="newPassword" required placeholder="새 비밀번호를 입력하세요 (최소 4자)" minlength="4">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">새 비밀번호 확인</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="새 비밀번호를 다시 입력하세요" minlength="4">
+                    </div>
+                    <div class="error-message" id="passwordError"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelPasswordBtn">취소</button>
+                <button class="btn btn-primary" id="submitPasswordBtn">변경</button>
             </div>
         </div>
     </div>
