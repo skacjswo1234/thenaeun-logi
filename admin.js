@@ -79,33 +79,55 @@ async function fetchContacts(page = 1, status = '', search = '') {
         showLoading(true);
         
         let url = `/admin/contacts?page=${page}&limit=20`;
-        if (status) {
-            url += `&status=${status}`;
+        if (status && status.trim() !== '') {
+            url += `&status=${encodeURIComponent(status.trim())}`;
         }
 
         const data = await apiRequest(url);
         
+        // API 응답 검증
+        if (!data || typeof data !== 'object') {
+            throw new Error('잘못된 API 응답입니다.');
+        }
+        
         // 클라이언트 사이드 검색 필터링
-        let filteredContacts = data.contacts || [];
-        if (search) {
-            const searchLower = search.toLowerCase();
-            filteredContacts = filteredContacts.filter(contact => 
-                contact.name?.toLowerCase().includes(searchLower) ||
-                contact.phone?.toLowerCase().includes(searchLower) ||
-                contact.message?.toLowerCase().includes(searchLower)
-            );
+        let filteredContacts = Array.isArray(data.contacts) ? data.contacts : [];
+        let pagination = data.pagination || { page: 1, limit: 20, total: 0, totalPages: 0 };
+        
+        if (search && search.trim() !== '') {
+            const searchLower = search.toLowerCase().trim();
+            filteredContacts = filteredContacts.filter(contact => {
+                if (!contact) return false;
+                return (
+                    (contact.name && contact.name.toLowerCase().includes(searchLower)) ||
+                    (contact.phone && contact.phone.toLowerCase().includes(searchLower)) ||
+                    (contact.message && contact.message.toLowerCase().includes(searchLower))
+                );
+            });
+            
+            // 검색 필터링이 적용된 경우 페이지네이션 조정
+            if (filteredContacts.length === 0 && data.contacts && data.contacts.length > 0) {
+                // 검색 결과가 없고 원본 데이터는 있는 경우
+                pagination = {
+                    ...pagination,
+                    total: 0,
+                    totalPages: 0
+                };
+            }
         }
 
         contactsData = filteredContacts;
         renderContacts(filteredContacts);
-        renderPagination(data.pagination);
+        renderPagination(pagination);
         await updateStats();
         
         showLoading(false);
     } catch (error) {
         showLoading(false);
-        showToast('문의 목록을 불러오는 중 오류가 발생했습니다.', 'error');
+        const errorMessage = error.message || '문의 목록을 불러오는 중 오류가 발생했습니다.';
+        showToast(errorMessage, 'error');
         console.error('문의 조회 오류:', error);
+        console.error('상태:', status, '검색:', search, '페이지:', page);
     }
 }
 
@@ -172,12 +194,23 @@ function renderContacts(contacts) {
 
 // 페이지네이션 렌더링
 function renderPagination(pagination) {
-    if (!pagination || pagination.totalPages <= 1) {
+    if (!paginationEl) {
+        console.warn('페이지네이션 요소를 찾을 수 없습니다.');
+        return;
+    }
+    
+    if (!pagination || typeof pagination !== 'object') {
         paginationEl.innerHTML = '';
         return;
     }
-
-    const { page, totalPages } = pagination;
+    
+    const totalPages = parseInt(pagination.totalPages) || 0;
+    const page = parseInt(pagination.page) || 1;
+    
+    if (totalPages <= 1) {
+        paginationEl.innerHTML = '';
+        return;
+    }
     let html = '';
 
     // 이전 버튼
@@ -390,26 +423,8 @@ function getStatusText(status) {
     return statusMap[status] || status;
 }
 
-// 이벤트 리스너 (안전하게 등록)
-if (statusFilterEl) {
-    statusFilterEl.addEventListener('change', (e) => {
-        currentStatus = e.target.value;
-        currentPage = 1;
-        fetchContacts(currentPage, currentStatus, currentSearch);
-    });
-}
-
+// 이벤트 리스너는 DOMContentLoaded에서 등록
 let searchTimeout;
-if (searchInputEl) {
-    searchInputEl.addEventListener('input', (e) => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            currentSearch = e.target.value;
-            currentPage = 1;
-            fetchContacts(currentPage, currentStatus, currentSearch);
-        }, 500);
-    });
-}
 
 if (closeModalBtn) {
     closeModalBtn.addEventListener('click', closeContactModal);
@@ -877,6 +892,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
+    
+    // 상태 필터 이벤트 리스너
+    const statusFilterEl = document.getElementById('statusFilter');
+    if (statusFilterEl) {
+        statusFilterEl.addEventListener('change', (e) => {
+            currentStatus = e.target.value;
+            currentPage = 1;
+            fetchContacts(currentPage, currentStatus, currentSearch);
+        });
+    }
+    
+    // 검색 필터 이벤트 리스너
+    const searchInputEl = document.getElementById('searchInput');
+    if (searchInputEl) {
+        searchInputEl.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                currentSearch = e.target.value;
+                currentPage = 1;
+                fetchContacts(currentPage, currentStatus, currentSearch);
+            }, 500);
+        });
+    }
     
     // 문의 목록 로드
     fetchContacts(currentPage, currentStatus, currentSearch);
