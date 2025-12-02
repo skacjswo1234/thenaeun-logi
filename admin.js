@@ -135,8 +135,8 @@ async function updateStats() {
 function renderContacts(contacts) {
     if (contacts.length === 0) {
         contactsListEl.innerHTML = `
-            <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 8px;">
-                <p style="color: #999; font-size: 16px;">문의 내역이 없습니다.</p>
+            <div class="contacts-list-empty">
+                <p>문의 내역이 없습니다.</p>
             </div>
         `;
         return;
