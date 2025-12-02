@@ -35,7 +35,6 @@ const markAsReadBtn = getElement('markAsReadBtn');
 const markAsRepliedBtn = getElement('markAsRepliedBtn');
 const deleteContactBtn = getElement('deleteContactBtn');
 const toastEl = getElement('toast');
-const passwordModal = getElement('passwordModal');
 const menuToggleBtn = getElement('menuToggleBtn');
 const sideMenu = getElement('sideMenu');
 const sideMenuOverlay = getElement('sideMenuOverlay');
@@ -43,13 +42,6 @@ const sideMenuClose = getElement('sideMenuClose');
 const sideMenuRefresh = getElement('sideMenuRefresh');
 const sideMenuChangePassword = getElement('sideMenuChangePassword');
 const sideMenuLogout = getElement('sideMenuLogout');
-const closePasswordModal = getElement('closePasswordModal');
-const cancelPasswordBtn = getElement('cancelPasswordBtn');
-const submitPasswordBtn = getElement('submitPasswordBtn');
-const changePasswordForm = getElement('changePasswordForm');
-const passwordError = getElement('passwordError');
-const currentUsername = getElement('currentUsername');
-const settingsChangePassword = getElement('settingsChangePassword');
 
 // 통계 요소
 const totalCountEl = document.getElementById('totalCount');
@@ -598,198 +590,174 @@ function handleLogout() {
     }
 }
 
-if (sideMenuLogout) {
-    sideMenuLogout.addEventListener('click', () => {
-        closeSideMenu();
-        handleLogout();
-    });
-}
-
-if (sidebarLogout) {
-    sidebarLogout.addEventListener('click', handleLogout);
-}
-
-// 로그아웃 함수
-function handleLogout() {
-    if (confirm('로그아웃 하시겠습니까?')) {
-        localStorage.removeItem('adminLoggedIn');
-        localStorage.removeItem('adminUsername');
-        window.location.href = 'login.html';
-    }
-}
-
-if (sideMenuLogout) {
-    sideMenuLogout.addEventListener('click', () => {
-        closeSideMenu();
-        handleLogout();
-    });
-}
-
-if (sidebarLogout) {
-    sidebarLogout.addEventListener('click', handleLogout);
-}
+// ============================================
+// 비밀번호 변경 기능
+// ============================================
 
 // 비밀번호 변경 모달 열기
 function openPasswordModal() {
-    console.log('openPasswordModal 호출됨');
-    
-    // DOM 요소 다시 가져오기 (동적으로 생성된 경우 대비)
     const modal = document.getElementById('passwordModal');
     const usernameInput = document.getElementById('currentUsername');
     const form = document.getElementById('changePasswordForm');
     const errorEl = document.getElementById('passwordError');
     
-    console.log('모달 요소 확인:', {
-        modal: !!modal,
-        usernameInput: !!usernameInput,
-        form: !!form,
-        errorEl: !!errorEl
-    });
-    
-    if (!modal) {
-        console.error('passwordModal 요소를 찾을 수 없습니다.');
+    if (!modal || !usernameInput || !form) {
+        console.error('비밀번호 변경 모달 요소를 찾을 수 없습니다.');
         return;
     }
     
-    if (!usernameInput) {
-        console.error('currentUsername 요소를 찾을 수 없습니다.');
-        return;
-    }
-    
-    if (!form) {
-        console.error('changePasswordForm 요소를 찾을 수 없습니다.');
-        return;
-    }
-    
+    // 사용자명 설정
     const username = localStorage.getItem('adminUsername') || 'admin';
     usernameInput.value = username;
+    
+    // 에러 메시지 초기화
+    if (errorEl) {
+        errorEl.classList.remove('show');
+        errorEl.textContent = '';
+    }
+    
+    // 폼 초기화
+    form.reset();
+    usernameInput.value = username; // reset 후 다시 설정
+    
+    // 모달 표시
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+// 비밀번호 변경 모달 닫기
+function closePasswordModal() {
+    const modal = document.getElementById('passwordModal');
+    const errorEl = document.getElementById('passwordError');
+    const form = document.getElementById('changePasswordForm');
+    
+    if (modal) {
+        modal.classList.remove('active');
+    }
     
     if (errorEl) {
         errorEl.classList.remove('show');
         errorEl.textContent = '';
     }
     
-    form.reset();
+    if (form) {
+        form.reset();
+    }
     
-    // 모달 표시 (강제로 스타일 적용)
-    modal.style.display = 'flex';
-    modal.style.alignItems = 'center';
-    modal.style.justifyContent = 'center';
-    modal.style.position = 'fixed';
-    modal.style.zIndex = '10000';
-    modal.style.left = '0';
-    modal.style.top = '0';
-    modal.style.width = '100%';
-    modal.style.height = '100%';
-    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = '';
+}
+
+// 비밀번호 변경 폼 제출 처리
+async function handlePasswordChange(event) {
+    event.preventDefault();
     
-    console.log('모달 열기 완료', {
-        hasActiveClass: modal.classList.contains('active'),
-        computedDisplay: window.getComputedStyle(modal).display,
-        computedZIndex: window.getComputedStyle(modal).zIndex,
-        modalRect: modal.getBoundingClientRect()
-    });
-}
-
-// settingsChangePassword 이벤트는 DOMContentLoaded에서 등록
-
-// 비밀번호 변경 모달 닫기
-if (closePasswordModal) {
-    closePasswordModal.addEventListener('click', closePasswordModalFunc);
-}
-if (cancelPasswordBtn) {
-    cancelPasswordBtn.addEventListener('click', closePasswordModalFunc);
-}
-
-if (passwordModal) {
-    passwordModal.addEventListener('click', (e) => {
-        if (e.target === passwordModal) {
-            closePasswordModalFunc();
+    const usernameInput = document.getElementById('currentUsername');
+    const oldPasswordInput = document.getElementById('oldPassword');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const errorEl = document.getElementById('passwordError');
+    const submitBtn = document.getElementById('submitPasswordBtn');
+    
+    if (!usernameInput || !oldPasswordInput || !newPasswordInput || !confirmPasswordInput) {
+        return;
+    }
+    
+    const username = usernameInput.value.trim();
+    const oldPassword = oldPasswordInput.value.trim();
+    const newPassword = newPasswordInput.value.trim();
+    const confirmPassword = confirmPasswordInput.value.trim();
+    
+    // 에러 메시지 초기화
+    if (errorEl) {
+        errorEl.classList.remove('show');
+        errorEl.textContent = '';
+    }
+    
+    // 입력 검증
+    if (!oldPassword || !newPassword || !confirmPassword) {
+        if (errorEl) {
+            errorEl.textContent = '모든 필드를 입력해주세요.';
+            errorEl.classList.add('show');
         }
-    });
-}
-
-function closePasswordModalFunc() {
-    passwordModal.classList.remove('active');
-    passwordError.classList.remove('show');
-    changePasswordForm.reset();
-}
-
-// 비밀번호 변경 폼 제출
-if (changePasswordForm) {
-    changePasswordForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+        return;
+    }
+    
+    if (newPassword.length < 4) {
+        if (errorEl) {
+            errorEl.textContent = '새 비밀번호는 최소 4자 이상이어야 합니다.';
+            errorEl.classList.add('show');
+        }
+        return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+        if (errorEl) {
+            errorEl.textContent = '새 비밀번호가 일치하지 않습니다.';
+            errorEl.classList.add('show');
+        }
+        return;
+    }
+    
+    if (oldPassword === newPassword) {
+        if (errorEl) {
+            errorEl.textContent = '새 비밀번호는 현재 비밀번호와 달라야 합니다.';
+            errorEl.classList.add('show');
+        }
+        return;
+    }
+    
+    // 버튼 비활성화
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = '변경 중...';
+    }
+    
+    try {
+        await apiRequest('/auth/change-password', {
+            method: 'POST',
+            body: JSON.stringify({
+                username,
+                oldPassword,
+                newPassword,
+            }),
+        });
         
-        if (!currentUsername || !passwordError || !submitPasswordBtn) return;
-        
-        const username = currentUsername.value;
-        const oldPassword = document.getElementById('oldPassword')?.value;
-        const newPassword = document.getElementById('newPassword')?.value;
-        const confirmPassword = document.getElementById('confirmPassword')?.value;
-
-        if (passwordError) passwordError.classList.remove('show');
-
-        // 비밀번호 확인 검증
-        if (newPassword !== confirmPassword) {
-            if (passwordError) {
-                passwordError.textContent = '새 비밀번호가 일치하지 않습니다.';
-                passwordError.classList.add('show');
-            }
-            return;
+        showToast('비밀번호가 성공적으로 변경되었습니다.', 'success');
+        closePasswordModal();
+    } catch (error) {
+        if (errorEl) {
+            errorEl.textContent = error.message || '비밀번호 변경 중 오류가 발생했습니다.';
+            errorEl.classList.add('show');
         }
-
-        if (newPassword.length < 4) {
-            if (passwordError) {
-                passwordError.textContent = '새 비밀번호는 최소 4자 이상이어야 합니다.';
-                passwordError.classList.add('show');
-            }
-            return;
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = '변경';
         }
-
-        submitPasswordBtn.disabled = true;
-        submitPasswordBtn.textContent = '변경 중...';
-
-        try {
-            const data = await apiRequest('/auth/change-password', {
-                method: 'POST',
-                body: JSON.stringify({
-                    username,
-                    oldPassword,
-                    newPassword,
-                }),
-            });
-
-            showToast('비밀번호가 변경되었습니다.', 'success');
-            closePasswordModalFunc();
-        } catch (error) {
-            if (passwordError) {
-                passwordError.textContent = error.message || '비밀번호 변경 중 오류가 발생했습니다.';
-                passwordError.classList.add('show');
-            }
-        } finally {
-            if (submitPasswordBtn) {
-                submitPasswordBtn.disabled = false;
-                submitPasswordBtn.textContent = '변경';
-            }
-        }
-    });
+    }
 }
 
+// ============================================
 // 키보드 이벤트 (ESC로 모달 닫기)
+// ============================================
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-        if (passwordModal.classList.contains('active')) {
-            closePasswordModalFunc();
+        const passwordModal = document.getElementById('passwordModal');
+        const contactModal = document.getElementById('contactModal');
+        
+        if (passwordModal && passwordModal.classList.contains('active')) {
+            closePasswordModal();
         }
-        if (contactModal.classList.contains('active')) {
+        if (contactModal && contactModal.classList.contains('active')) {
             closeContactModal();
         }
     }
 });
 
-// 초기 로드
+// ============================================
+// 초기화
+// ============================================
+
 document.addEventListener('DOMContentLoaded', () => {
     // 메뉴 토글 초기화
     initMenuToggle();
@@ -797,7 +765,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 네비게이션 초기화
     initNavigation();
     
-    // 사이드 메뉴 닫기 이벤트 (DOM 로드 후)
+    // 사이드 메뉴 닫기 이벤트
     const sideMenuCloseEl = document.getElementById('sideMenuClose');
     const sideMenuOverlayEl = document.getElementById('sideMenuOverlay');
     if (sideMenuCloseEl) {
@@ -807,14 +775,56 @@ document.addEventListener('DOMContentLoaded', () => {
         sideMenuOverlayEl.addEventListener('click', closeSideMenu);
     }
     
-    // 비밀번호 변경 버튼 이벤트 (설정 페이지)
-    const settingsChangePasswordEl = document.getElementById('settingsChangePassword');
-    if (settingsChangePasswordEl) {
-        settingsChangePasswordEl.addEventListener('click', () => {
-            console.log('비밀번호 변경 버튼 클릭');
-            openPasswordModal();
+    // 로그아웃 이벤트
+    const sideMenuLogoutEl = document.getElementById('sideMenuLogout');
+    const sidebarLogoutEl = document.getElementById('sidebarLogout');
+    
+    if (sideMenuLogoutEl) {
+        sideMenuLogoutEl.addEventListener('click', () => {
+            closeSideMenu();
+            handleLogout();
         });
     }
+    
+    if (sidebarLogoutEl) {
+        sidebarLogoutEl.addEventListener('click', handleLogout);
+    }
+    
+    // 비밀번호 변경 관련 이벤트 리스너
+    const passwordModal = document.getElementById('passwordModal');
+    const closePasswordModalBtn = document.getElementById('closePasswordModal');
+    const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+    const changePasswordForm = document.getElementById('changePasswordForm');
+    const settingsChangePasswordBtn = document.getElementById('settingsChangePassword');
+    
+    // 모달 닫기 버튼
+    if (closePasswordModalBtn) {
+        closePasswordModalBtn.addEventListener('click', closePasswordModal);
+    }
+    
+    if (cancelPasswordBtn) {
+        cancelPasswordBtn.addEventListener('click', closePasswordModal);
+    }
+    
+    // 모달 외부 클릭 시 닫기
+    if (passwordModal) {
+        passwordModal.addEventListener('click', (e) => {
+            if (e.target === passwordModal) {
+                closePasswordModal();
+            }
+        });
+    }
+    
+    // 폼 제출
+    if (changePasswordForm) {
+        changePasswordForm.addEventListener('submit', handlePasswordChange);
+    }
+    
+    // 설정 페이지의 비밀번호 변경 버튼
+    if (settingsChangePasswordBtn) {
+        settingsChangePasswordBtn.addEventListener('click', openPasswordModal);
+    }
+    
     
     // 문의 목록 로드
     fetchContacts(currentPage, currentStatus, currentSearch);

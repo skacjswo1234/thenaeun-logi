@@ -13,11 +13,12 @@ export async function onRequestPost(context) {
       return errorResponse('모든 필드를 입력해주세요.', 400);
     }
 
+    // 새 비밀번호 유효성 검증
     if (newPassword.length < 4) {
       return errorResponse('새 비밀번호는 최소 4자 이상이어야 합니다.', 400);
     }
 
-    // 현재 비밀번호 확인
+    // 사용자 조회
     const admin = await env['thenaeun-logi-db'].prepare(
       'SELECT id, password FROM admin WHERE username = ?'
     ).bind(username).first();
@@ -26,8 +27,14 @@ export async function onRequestPost(context) {
       return errorResponse('사용자를 찾을 수 없습니다.', 404);
     }
 
+    // 현재 비밀번호 확인
     if (admin.password !== oldPassword) {
       return errorResponse('현재 비밀번호가 올바르지 않습니다.', 401);
+    }
+
+    // 새 비밀번호가 현재 비밀번호와 동일한지 확인
+    if (oldPassword === newPassword) {
+      return errorResponse('새 비밀번호는 현재 비밀번호와 달라야 합니다.', 400);
     }
 
     // 비밀번호 변경
@@ -42,7 +49,7 @@ export async function onRequestPost(context) {
     }
 
     return successResponse({
-      message: '비밀번호가 변경되었습니다.',
+      message: '비밀번호가 성공적으로 변경되었습니다.',
     });
   } catch (error) {
     console.error('비밀번호 변경 오류:', error);
@@ -54,4 +61,3 @@ export async function onRequestPost(context) {
 export async function onRequestOptions() {
   return handleCORS();
 }
-
