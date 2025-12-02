@@ -598,27 +598,33 @@ function handleLogout() {
 function openPasswordModal() {
     const modal = document.getElementById('passwordModal');
     const usernameInput = document.getElementById('currentUsername');
-    const form = document.getElementById('changePasswordForm');
     const errorEl = document.getElementById('passwordError');
     
-    if (!modal || !usernameInput || !form) {
-        console.error('비밀번호 변경 모달 요소를 찾을 수 없습니다.');
+    if (!modal) {
+        console.error('비밀번호 변경 모달을 찾을 수 없습니다.');
         return;
     }
     
     // 사용자명 설정
     const username = localStorage.getItem('adminUsername') || 'admin';
-    usernameInput.value = username;
+    if (usernameInput) {
+        usernameInput.value = username;
+    }
     
-    // 에러 메시지 초기화
+    // 에러 메시지 숨기기
     if (errorEl) {
         errorEl.classList.remove('show');
         errorEl.textContent = '';
     }
     
-    // 폼 초기화
-    form.reset();
-    usernameInput.value = username; // reset 후 다시 설정
+    // 입력 필드 초기화
+    const oldPasswordInput = document.getElementById('oldPassword');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    
+    if (oldPasswordInput) oldPasswordInput.value = '';
+    if (newPasswordInput) newPasswordInput.value = '';
+    if (confirmPasswordInput) confirmPasswordInput.value = '';
     
     // 모달 표시
     modal.classList.add('active');
@@ -629,7 +635,6 @@ function openPasswordModal() {
 function closePasswordModal() {
     const modal = document.getElementById('passwordModal');
     const errorEl = document.getElementById('passwordError');
-    const form = document.getElementById('changePasswordForm');
     
     if (modal) {
         modal.classList.remove('active');
@@ -640,69 +645,78 @@ function closePasswordModal() {
         errorEl.textContent = '';
     }
     
-    if (form) {
-        form.reset();
-    }
+    // 입력 필드 초기화
+    const oldPasswordInput = document.getElementById('oldPassword');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    
+    if (oldPasswordInput) oldPasswordInput.value = '';
+    if (newPasswordInput) newPasswordInput.value = '';
+    if (confirmPasswordInput) confirmPasswordInput.value = '';
     
     document.body.style.overflow = '';
 }
 
-// 비밀번호 변경 폼 제출 처리
-async function handlePasswordChange(event) {
-    event.preventDefault();
-    
+// 에러 메시지 표시
+function showPasswordError(message) {
+    const errorEl = document.getElementById('passwordError');
+    if (errorEl) {
+        errorEl.textContent = message;
+        errorEl.classList.add('show');
+    }
+}
+
+// 에러 메시지 숨기기
+function hidePasswordError() {
+    const errorEl = document.getElementById('passwordError');
+    if (errorEl) {
+        errorEl.classList.remove('show');
+        errorEl.textContent = '';
+    }
+}
+
+// 비밀번호 변경 실행
+async function changePassword() {
+    // 요소 가져오기
     const usernameInput = document.getElementById('currentUsername');
     const oldPasswordInput = document.getElementById('oldPassword');
     const newPasswordInput = document.getElementById('newPassword');
     const confirmPasswordInput = document.getElementById('confirmPassword');
-    const errorEl = document.getElementById('passwordError');
     const submitBtn = document.getElementById('submitPasswordBtn');
     
+    // 요소 확인
     if (!usernameInput || !oldPasswordInput || !newPasswordInput || !confirmPasswordInput) {
+        console.error('비밀번호 변경 폼 요소를 찾을 수 없습니다.');
         return;
     }
     
+    // 값 가져오기
     const username = usernameInput.value.trim();
     const oldPassword = oldPasswordInput.value.trim();
     const newPassword = newPasswordInput.value.trim();
     const confirmPassword = confirmPasswordInput.value.trim();
     
     // 에러 메시지 초기화
-    if (errorEl) {
-        errorEl.classList.remove('show');
-        errorEl.textContent = '';
-    }
+    hidePasswordError();
     
     // 입력 검증
     if (!oldPassword || !newPassword || !confirmPassword) {
-        if (errorEl) {
-            errorEl.textContent = '모든 필드를 입력해주세요.';
-            errorEl.classList.add('show');
-        }
+        showPasswordError('모든 필드를 입력해주세요.');
         return;
     }
     
     if (newPassword.length < 4) {
-        if (errorEl) {
-            errorEl.textContent = '새 비밀번호는 최소 4자 이상이어야 합니다.';
-            errorEl.classList.add('show');
-        }
+        showPasswordError('새 비밀번호는 최소 4자 이상이어야 합니다.');
         return;
     }
     
     if (newPassword !== confirmPassword) {
-        if (errorEl) {
-            errorEl.textContent = '새 비밀번호가 일치하지 않습니다.';
-            errorEl.classList.add('show');
-        }
+        showPasswordError('새 비밀번호가 일치하지 않습니다.');
         return;
     }
     
     if (oldPassword === newPassword) {
-        if (errorEl) {
-            errorEl.textContent = '새 비밀번호는 현재 비밀번호와 달라야 합니다.';
-            errorEl.classList.add('show');
-        }
+        showPasswordError('새 비밀번호는 현재 비밀번호와 달라야 합니다.');
         return;
     }
     
@@ -713,7 +727,7 @@ async function handlePasswordChange(event) {
     }
     
     try {
-        await apiRequest('/auth/change-password', {
+        const response = await apiRequest('/auth/change-password', {
             method: 'POST',
             body: JSON.stringify({
                 username,
@@ -725,10 +739,9 @@ async function handlePasswordChange(event) {
         showToast('비밀번호가 성공적으로 변경되었습니다.', 'success');
         closePasswordModal();
     } catch (error) {
-        if (errorEl) {
-            errorEl.textContent = error.message || '비밀번호 변경 중 오류가 발생했습니다.';
-            errorEl.classList.add('show');
-        }
+        // 에러 메시지 표시 (API에서 오는 에러 메시지 사용)
+        const errorMessage = error.message || '비밀번호 변경 중 오류가 발생했습니다.';
+        showPasswordError(errorMessage);
     } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
@@ -794,7 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const passwordModal = document.getElementById('passwordModal');
     const closePasswordModalBtn = document.getElementById('closePasswordModal');
     const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
-    const changePasswordForm = document.getElementById('changePasswordForm');
+    const submitPasswordBtn = document.getElementById('submitPasswordBtn');
     const settingsChangePasswordBtn = document.getElementById('settingsChangePassword');
     
     // 모달 닫기 버튼
@@ -815,14 +828,53 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    // 폼 제출
-    if (changePasswordForm) {
-        changePasswordForm.addEventListener('submit', handlePasswordChange);
+    // 변경 버튼 클릭 이벤트
+    if (submitPasswordBtn) {
+        submitPasswordBtn.addEventListener('click', changePassword);
+    }
+    
+    // Enter 키로 비밀번호 변경 (비밀번호 입력 필드에서)
+    const oldPasswordInput = document.getElementById('oldPassword');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    
+    if (oldPasswordInput) {
+        oldPasswordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                changePassword();
+            }
+        });
+    }
+    
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                changePassword();
+            }
+        });
+    }
+    
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                changePassword();
+            }
+        });
     }
     
     // 설정 페이지의 비밀번호 변경 버튼
     if (settingsChangePasswordBtn) {
         settingsChangePasswordBtn.addEventListener('click', openPasswordModal);
+    }
+    
+    // 사이드 메뉴의 비밀번호 변경 버튼
+    if (sideMenuChangePassword) {
+        sideMenuChangePassword.addEventListener('click', () => {
+            switchPage('settings');
+            setTimeout(() => {
+                openPasswordModal();
+            }, 100);
+        });
     }
     
     
