@@ -102,7 +102,7 @@ async function fetchContacts(page = 1, status = '', search = '') {
                     (contact.name && contact.name.toLowerCase().includes(searchLower)) ||
                     (contact.phone && contact.phone.toLowerCase().includes(searchLower)) ||
                     (contact.message && contact.message.toLowerCase().includes(searchLower))
-                );
+            );
             });
             
             // 검색 필터링이 적용된 경우 페이지네이션 조정
@@ -203,7 +203,7 @@ function renderPagination(pagination) {
         paginationEl.innerHTML = '';
         return;
     }
-    
+
     const totalPages = parseInt(pagination.totalPages) || 0;
     const page = parseInt(pagination.page) || 1;
     
@@ -623,7 +623,7 @@ function openPasswordModal() {
     // 사용자명 설정
     const username = localStorage.getItem('adminUsername') || 'admin';
     if (usernameInput) {
-        usernameInput.value = username;
+    usernameInput.value = username;
     }
     
     // 에러 메시지 숨기기
@@ -653,7 +653,7 @@ function closePasswordModal() {
     
     if (modal) {
         modal.classList.remove('active');
-    }
+}
     
     if (errorEl) {
         errorEl.classList.remove('show');
@@ -717,19 +717,19 @@ async function changePassword() {
     // 입력 검증
     if (!oldPassword || !newPassword || !confirmPassword) {
         showPasswordError('모든 필드를 입력해주세요.');
-        return;
-    }
-    
-    if (newPassword.length < 4) {
+            return;
+        }
+
+        if (newPassword.length < 4) {
         showPasswordError('새 비밀번호는 최소 4자 이상이어야 합니다.');
         return;
-    }
+            }
     
     if (newPassword !== confirmPassword) {
         showPasswordError('새 비밀번호가 일치하지 않습니다.');
-        return;
-    }
-    
+            return;
+        }
+
     if (oldPassword === newPassword) {
         showPasswordError('새 비밀번호는 현재 비밀번호와 달라야 합니다.');
         return;
@@ -740,29 +740,29 @@ async function changePassword() {
         submitBtn.disabled = true;
         submitBtn.textContent = '변경 중...';
     }
-    
-    try {
+
+        try {
         const response = await apiRequest('/auth/change-password', {
-            method: 'POST',
-            body: JSON.stringify({
-                username,
-                oldPassword,
-                newPassword,
-            }),
-        });
-        
+                method: 'POST',
+                body: JSON.stringify({
+                    username,
+                    oldPassword,
+                    newPassword,
+                }),
+            });
+
         showToast('비밀번호가 성공적으로 변경되었습니다.', 'success');
         closePasswordModal();
-    } catch (error) {
+        } catch (error) {
         // 에러 메시지 표시 (API에서 오는 에러 메시지 사용)
         const errorMessage = error.message || '비밀번호 변경 중 오류가 발생했습니다.';
         showPasswordError(errorMessage);
-    } finally {
+        } finally {
         if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.textContent = '변경';
+            }
         }
-    }
 }
 
 // ============================================
@@ -887,7 +887,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sideMenuChangePassword.addEventListener('click', () => {
             switchPage('settings');
             setTimeout(() => {
-                openPasswordModal();
+            openPasswordModal();
             }, 100);
         });
     }
