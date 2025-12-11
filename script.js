@@ -786,6 +786,11 @@ function initContactForm() {
             const result = await response.json();
             
             if (response.ok) {
+                // Meta Pixel CompleteRegistration 이벤트 트리거
+                if (typeof fbq !== 'undefined') {
+                    fbq('track', 'CompleteRegistration');
+                }
+                
                 showSuccessModal();
                 contactForm.reset();
             } else {
